@@ -1,0 +1,68 @@
+syntax = "proto3";
+package orderData;
+
+// 向服务端注册客户端
+message RegisterClientReq
+{
+    string ClientName = 1;
+    string GroupName = 2;
+}
+// 注册客户端回复
+message RegisterClientResp {
+    string ErrorId = 1;
+}
+
+// 客户端发送订单数据
+message SendDataReq {
+    string Target = 1;
+    string CustomId = 2;
+    uint64 SequenceId = 3;
+    string Data = 4;
+}
+// 客户端收到订单数据确认
+message SendDataResp {
+    string ErrorId = 1;
+    string CustomId = 2;
+}
+
+// 服务器通知客户端数据到达
+message DataArrivedReq {
+    string CustomId = 1;
+    uint64 SequenceId = 2;
+    string Data = 3;
+}
+// 服务器收到通知数据到达确认
+message DataArrivedResp {
+    string ErrorId = 1;
+    string CustomId = 2;
+}
+
+// ------------------------------------------------------------------------------
+// 服务器消息
+// itemAgent收到消息后向connProcess发送数据请求
+message ItemAgentSendDataReq {
+    string CustomId = 1;
+    string Target = 2;
+    string Origin = 3;
+    uint64 SequenceId = 4;
+    string Data = 5;
+}
+
+// 返回结果
+message ItemAgentSendDataResp {
+    string CustomId = 1;
+    string ErrorId = 2;
+}
+
+// connProcess向目标itemAgent发送请求
+message ItemAgentArrivedReq {
+    string CustomId = 1;
+    string Origin = 2;
+    uint64 SequenceId = 3;
+    string Data = 4;
+}
+// 发送成功后返回
+message ItemAgentArrivedResp {
+    string CustomId = 1;
+    string ErrorId = 2;
+}

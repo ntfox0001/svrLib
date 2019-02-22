@@ -1,0 +1,10 @@
+debug
+*.exe
+*.gz
+*.tar
+*.test
+*.zip
+*.log
+*.meta
+*.profile
+.vscode

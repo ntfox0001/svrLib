@@ -1,0 +1,8 @@
+syntax = "proto3";
+package msgData;
+
+message TunnelMsg
+{
+    string msgId = 1;
+    string data = 2;
+}
