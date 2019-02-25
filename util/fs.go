@@ -13,3 +13,12 @@ func PathExists(path string) bool {
 	// }
 	return false
 }
+
+// 创建目录
+func CreatePath(path string) error {
+	if !PathExists(path) {
+		err := os.MkdirAll(path, os.ModePerm)
+		return err
+	}
+	return nil
+}
