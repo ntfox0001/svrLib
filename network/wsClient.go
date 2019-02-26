@@ -34,8 +34,8 @@ func NewWsClient2(url string, header http.Header) (*WsClient, error) {
 		WsMsgHandler: WsMsgHandler{
 
 			conn:       conn,
-			msgMap:     make(map[string]func(*networkInterface.RawMsgData)),
-			jsonMsgMap: make(map[string]func(map[string]interface{})),
+			msgMap:     make(map[string]func(*networkInterface.RawMsgData, interface{})),
+			jsonMsgMap: make(map[string]func(map[string]interface{}, interface{})),
 			// jsonMsgChan: make(chan map[string]interface{}),
 			// msgChan:     make(chan networkInterface.IMsgData),
 		},
