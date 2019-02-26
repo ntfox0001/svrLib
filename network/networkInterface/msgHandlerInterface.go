@@ -6,16 +6,16 @@ type IMsgHandler interface {
 	SendMsg(msg IMsgData) error
 
 	// 注册json消息
-	RegisterJsonMsg(msgId string, handler func(map[string]interface{})) error
+	RegisterJsonMsg(msgId string, handler func(map[string]interface{}, interface{})) error
 	// 设置json消息处理函数，替代默认函数
-	SetDispatchJsonMsgHandler(f func(msg map[string]interface{}))
-	DispatchJsonMsg(msg map[string]interface{}) error
+	SetDispatchJsonMsgHandler(f func(map[string]interface{}, interface{}))
+	DispatchJsonMsg(map[string]interface{}) error
 
 	// 注册消息
-	RegisterMsg(msgId string, handler func(*RawMsgData)) error
+	RegisterMsg(msgId string, handler func(*RawMsgData, interface{})) error
 	// 设置消息处理函数，替代默认函数
-	SetDispatchMsgHandler(f func(*RawMsgData))
-	DispatchMsg(msg *RawMsgData) error
+	SetDispatchMsgHandler(f func(*RawMsgData, interface{}))
+	DispatchMsg(*RawMsgData) error
 
 	// 断开连接
 	Disconnect()

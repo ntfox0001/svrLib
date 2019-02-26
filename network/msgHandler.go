@@ -3,39 +3,42 @@ package network
 import (
 	"fmt"
 	"net/http"
+	"runtime/debug"
+
 	"github.com/ntfox0001/svrLib/commonError"
 	"github.com/ntfox0001/svrLib/network/msgData"
 	"github.com/ntfox0001/svrLib/network/networkInterface"
-	"runtime/debug"
 
 	"github.com/golang/protobuf/proto"
 	"github.com/gorilla/websocket"
-	"github.com/ntfox0001/svrLib/log"
 	jsoniter "github.com/json-iterator/go"
+	"github.com/ntfox0001/svrLib/log"
 )
 
 type WsMsgHandler struct {
-	conn        *websocket.Conn
-	msgMap      map[string]func(msg *networkInterface.RawMsgData)
-	jsonMsgMap  map[string]func(msg map[string]interface{})
-	request     *http.Request
-	jsonMsgChan chan map[string]interface{}
-	msgChan     chan networkInterface.IMsgData
+	conn       *websocket.Conn
+	msgMap     map[string]func(*networkInterface.RawMsgData, interface{})
+	jsonMsgMap map[string]func(map[string]interface{}, interface{})
+	request    *http.Request
+	// jsonMsgChan chan map[string]interface{}
+	// msgChan     chan networkInterface.IMsgData
 	useExternal bool
 	headMsg     msgData.MsgHead
 
-	jsonMsgHandler func(msg map[string]interface{})
-	msgHandler     func(f *networkInterface.RawMsgData)
+	jsonMsgHandler func(map[string]interface{}, interface{})
+	msgHandler     func(*networkInterface.RawMsgData, interface{})
+
+	UserData interface{}
 }
 
 func NewMsgHander(conn *websocket.Conn, r *http.Request) networkInterface.IMsgHandler {
 	return &WsMsgHandler{
-		conn:        conn,
-		request:     r,
-		msgMap:      make(map[string]func(*networkInterface.RawMsgData)),
-		jsonMsgMap:  make(map[string]func(map[string]interface{})),
-		jsonMsgChan: make(chan map[string]interface{}),
-		msgChan:     make(chan networkInterface.IMsgData),
+		conn:       conn,
+		request:    r,
+		msgMap:     make(map[string]func(*networkInterface.RawMsgData, interface{})),
+		jsonMsgMap: make(map[string]func(map[string]interface{}, interface{})),
+		// jsonMsgChan: make(chan map[string]interface{}),
+		// msgChan:     make(chan networkInterface.IMsgData),
 		useExternal: true,
 		headMsg:     msgData.MsgHead{},
 	}
@@ -89,13 +92,13 @@ func (h *WsMsgHandler) DispatchJsonMsg(msg map[string]interface{}) error {
 		return commonError.NewCommErr("jsonMsg: msgId does not exist.", NetErrorUnknowMsg)
 	} else {
 		if h.jsonMsgHandler != nil {
-			if err := callJsonFunc(h.jsonMsgHandler, msg); err != nil {
+			if err := callJsonFunc(h.jsonMsgHandler, msg, h.UserData); err != nil {
 				return err
 			}
 		} else {
 			if handler, ok := h.jsonMsgMap[msgId.(string)]; ok {
 				// handler应该有缓存处理
-				if err := callJsonFunc(handler, msg); err != nil {
+				if err := callJsonFunc(handler, msg, h.useExternal); err != nil {
 					return err
 				}
 			}
@@ -103,7 +106,7 @@ func (h *WsMsgHandler) DispatchJsonMsg(msg map[string]interface{}) error {
 	}
 	return nil
 }
-func callJsonFunc(handler func(map[string]interface{}), msg map[string]interface{}) (rterr error) {
+func callJsonFunc(handler func(map[string]interface{}, interface{}), msg map[string]interface{}, userData interface{}) (rterr error) {
 	defer func() {
 		if err := recover(); err != nil {
 			es := fmt.Sprintf("\n%s\n", string(debug.Stack()))
@@ -111,10 +114,10 @@ func callJsonFunc(handler func(map[string]interface{}), msg map[string]interface
 			rterr = commonError.NewCommErr("logic error:"+err.(error).Error(), NetErrorLogic)
 		}
 	}()
-	handler(msg)
+	handler(msg, userData)
 	return nil
 }
-func (h *WsMsgHandler) RegisterJsonMsg(msgId string, handler func(map[string]interface{})) error {
+func (h *WsMsgHandler) RegisterJsonMsg(msgId string, handler func(map[string]interface{}, interface{})) error {
 	if _, ok := h.jsonMsgMap[msgId]; ok {
 		return commonError.NewCommErr("msgId has exist:"+msgId, NetErrorExistMsg)
 	} else {
@@ -129,13 +132,13 @@ func (h *WsMsgHandler) DispatchMsg(msg *networkInterface.RawMsgData) error {
 		return commonError.NewCommErr("msg: msgId is nil.", NetErrorUnknowMsg)
 	}
 	if h.msgHandler != nil {
-		if err := callFunc(h.msgHandler, msg); err != nil {
+		if err := callFunc(h.msgHandler, msg, h.UserData); err != nil {
 			return err
 		}
 	} else {
 		if handler, ok := h.msgMap[msg.Name()]; ok {
 			// handler应该有缓存处理
-			if err := callFunc(handler, msg); err != nil {
+			if err := callFunc(handler, msg, h.UserData); err != nil {
 				return err
 			}
 		} else {
@@ -144,7 +147,7 @@ func (h *WsMsgHandler) DispatchMsg(msg *networkInterface.RawMsgData) error {
 	}
 	return nil
 }
-func callFunc(handler func(*networkInterface.RawMsgData), msg *networkInterface.RawMsgData) (rterr error) {
+func callFunc(handler func(*networkInterface.RawMsgData, interface{}), msg *networkInterface.RawMsgData, userData interface{}) (rterr error) {
 	defer func() {
 		if err := recover(); err != nil {
 			es := fmt.Sprintf("\n%s\n", string(debug.Stack()))
@@ -153,10 +156,10 @@ func callFunc(handler func(*networkInterface.RawMsgData), msg *networkInterface.
 			rterr = commonError.NewCommErr("logic error:"+err.(error).Error(), NetErrorLogic)
 		}
 	}()
-	handler(msg)
+	handler(msg, userData)
 	return nil
 }
-func (h *WsMsgHandler) RegisterMsg(msgId string, handler func(*networkInterface.RawMsgData)) error {
+func (h *WsMsgHandler) RegisterMsg(msgId string, handler func(*networkInterface.RawMsgData, interface{})) error {
 	if _, ok := h.msgMap[msgId]; ok {
 		return commonError.NewCommErr("msgId has exist:"+msgId, NetErrorExistMsg)
 	} else {
@@ -165,10 +168,10 @@ func (h *WsMsgHandler) RegisterMsg(msgId string, handler func(*networkInterface.
 	return nil
 }
 
-func (h *WsMsgHandler) SetDispatchJsonMsgHandler(f func(map[string]interface{})) {
+func (h *WsMsgHandler) SetDispatchJsonMsgHandler(f func(map[string]interface{}, interface{})) {
 	h.jsonMsgHandler = f
 }
-func (h *WsMsgHandler) SetDispatchMsgHandler(f func(*networkInterface.RawMsgData)) {
+func (h *WsMsgHandler) SetDispatchMsgHandler(f func(*networkInterface.RawMsgData, interface{})) {
 	h.msgHandler = f
 }
 

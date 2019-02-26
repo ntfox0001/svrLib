@@ -2,6 +2,7 @@ package network
 
 import (
 	"net/http"
+
 	"github.com/ntfox0001/svrLib/network/networkInterface"
 
 	"github.com/gorilla/websocket"
@@ -23,25 +24,25 @@ func NewWsClient(url string) (*WsClient, error) {
 
 func NewWsClient2(url string, header http.Header) (*WsClient, error) {
 	conn, resp, err := websocket.DefaultDialer.Dial(url, header)
+	if err != nil {
+		return nil, err
+	}
 	client := &WsClient{
 		url:    url,
 		header: header,
 		resp:   resp,
 		WsMsgHandler: WsMsgHandler{
 
-			conn:        conn,
-			msgMap:      make(map[string]func(*networkInterface.RawMsgData)),
-			jsonMsgMap:  make(map[string]func(map[string]interface{})),
-			jsonMsgChan: make(chan map[string]interface{}),
-			msgChan:     make(chan networkInterface.IMsgData),
+			conn:       conn,
+			msgMap:     make(map[string]func(*networkInterface.RawMsgData)),
+			jsonMsgMap: make(map[string]func(map[string]interface{})),
+			// jsonMsgChan: make(chan map[string]interface{}),
+			// msgChan:     make(chan networkInterface.IMsgData),
 		},
 	}
 
-	if err == nil {
-		return client, nil
-	} else {
-		return nil, err
-	}
+	return client, nil
+
 }
 
 func (w *WsClient) Start() {
