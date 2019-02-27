@@ -19,21 +19,15 @@ type HttpClientResult struct {
 	Err  error
 }
 
-var (
-	GoPoolSize int
-	ExecSize   int
-)
-
 func Instance() *HttpClientManager {
 	if _self == nil {
 		_self = &HttpClientManager{}
-		_self.goPool = util.NewGoPool("HttpClientManager", GoPoolSize, ExecSize)
 	}
 	return _self
 }
 
-func (*HttpClientManager) Initial() {
-
+func (*HttpClientManager) Initial(goPoolSize, execSize int) {
+	_self.goPool = util.NewGoPool("HttpClientManager", goPoolSize, execSize)
 }
 func (*HttpClientManager) Release() {
 	_self.goPool.Release()
