@@ -23,3 +23,15 @@ func ISliceDel(s []int, id int) []int {
 	t := append(s[:id], s[id+1:]...)
 	return t
 }
+
+func SliceDel(s []interface{}, id int) []interface{} {
+	if s == nil {
+		return s
+	}
+	if len(s) <= id {
+		return s
+	}
+
+	t := append(s[:id], s[id+1:]...)
+	return t
+}
