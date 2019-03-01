@@ -6,10 +6,7 @@ import (
 	"reflect"
 )
 
-type FifoItem struct {
-	Data interface{}
-}
-type Fifo struct {
+type Channel struct {
 	inChan      chan interface{}
 	outChan     chan interface{}
 	quitChan    chan interface{}
@@ -22,8 +19,8 @@ type Fifo struct {
 }
 
 // 阻塞的多线程的先入先出，当空时，pop会阻塞
-func NewFifo() *Fifo {
-	fifo := &Fifo{
+func NewChannel() *Channel {
+	fifo := &Channel{
 		inChan:       make(chan interface{}),
 		outChan:      make(chan interface{}),
 		quitChan:     make(chan interface{}, 1),
@@ -45,7 +42,7 @@ func NewFifo() *Fifo {
 	return fifo
 }
 
-func (f *Fifo) run() {
+func (f *Channel) run() {
 runable:
 	for {
 		var chosen int
@@ -80,12 +77,12 @@ runable:
 }
 
 // 压入一个数据，当程序退出时，这个接口会抛出异常
-func (f *Fifo) Push(data interface{}) {
+func (f *Channel) Push(data interface{}) {
 	f.inChan <- data
 }
 
 // 弹出一个数据，当程序退出时，这个接口会抛出异常
-func (f *Fifo) Pop(ctx context.Context) interface{} {
+func (f *Channel) Pop(ctx context.Context) interface{} {
 	select {
 	case m := <-f.outChan:
 		return m
@@ -94,7 +91,7 @@ func (f *Fifo) Pop(ctx context.Context) interface{} {
 	}
 }
 
-func (f *Fifo) Close() {
+func (f *Channel) Close() {
 	f.quitChan <- struct{}{}
 	// 等待协程退出
 	<-f.quitChan

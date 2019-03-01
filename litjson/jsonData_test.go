@@ -5,7 +5,7 @@ import (
 	"reflect"
 	"testing"
 
-	"gitlab.funplus.io/jiang.liu/gameSvr/litjson"
+	"github.com/ntfox0001/svrLib/litjson"
 )
 
 func Test1(t *testing.T) {
@@ -40,4 +40,21 @@ func Test2(t *testing.T) {
 	jd.RemoveKey("f32")
 	fmt.Println(jd.ToJson())
 
+}
+
+func Test3(t *testing.T) {
+	jd := litjson.NewJsonDataFromJson(`{"int":-1}`)
+	fmt.Println(jd.ToJson())
+
+	fmt.Println(jd.Get("int").GetUInt32())
+	fmt.Println(jd.Get("int").GetUInt64())
+	fmt.Println(jd.Get("int").GetInt32())
+	fmt.Println(jd.Get("int").GetInt64())
+}
+
+func Test4(t *testing.T) {
+	jd := litjson.NewJsonDataFromJson(`{"bb":true}`)
+	fmt.Println(jd.ToJson())
+
+	fmt.Println(jd.Get("bb").GetBool())
 }

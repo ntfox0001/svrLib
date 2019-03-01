@@ -17,4 +17,7 @@ type ISelectLoopHelper interface {
 
 	// 创建一个回调Handler,用来向另一个selectloop表示发送者的对象，每一个消息只能使用自己的CallbackHandler
 	NewCallbackHandler(returnMsg string, userData interface{}) *CallbackHandler
+
+	RunIn(f func())
+	SyncRunIn(f func() interface{}) interface{}
 }

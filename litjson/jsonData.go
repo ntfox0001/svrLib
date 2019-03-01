@@ -7,8 +7,7 @@ import (
 
 const (
 	Type_None = iota
-	Type_Int
-	Type_UInt
+	Type_Bool
 	Type_String
 	Type_Double
 	Type_List
@@ -61,12 +60,12 @@ func NewJsonDataFromObject(obj interface{}) *JsonData {
 func getType(obj interface{}) int {
 
 	switch obj.(type) {
+	case bool:
+		return Type_Bool
 	case int:
 	case int64:
-		return Type_Int
 	case uint:
 	case uint64:
-		return Type_UInt
 	case float32:
 	case float64:
 		return Type_Double
@@ -97,7 +96,7 @@ func (jd *JsonData) ensure(valueType int) bool {
 func (jd *JsonData) Get(key string) *JsonData {
 	if jd.ensure(Type_Map) {
 		if v, ok := jd.data.(map[string]*JsonData)[key]; ok {
-			newjd := NewJsonDataFromObject(v)
+			newjd := NewJsonDataFromObject(v.data)
 			return newjd
 		}
 	}
@@ -139,7 +138,7 @@ func (jd *JsonData) Index(id int) *JsonData {
 			return nil
 		}
 
-		newjd := NewJsonDataFromObject(jd.data.([]*JsonData)[id])
+		newjd := NewJsonDataFromObject(jd.data.([]*JsonData)[id].data)
 		return newjd
 	}
 	return nil
@@ -218,31 +217,38 @@ func (jd *JsonData) GetFloat64() float64 {
 }
 
 func (jd *JsonData) GetInt32() int {
-	if jd.ensure(Type_Int) {
-		return int(jd.data.(int64))
+	if jd.ensure(Type_Double) {
+		return int(jd.data.(float64))
 	}
 	return 0
 }
 
 func (jd *JsonData) GetInt64() int64 {
-	if jd.ensure(Type_Int) {
-		return jd.data.(int64)
+	if jd.ensure(Type_Double) {
+		return int64(jd.data.(float64))
 	}
 	return 0
 }
 
 func (jd *JsonData) GetUInt32() uint {
-	if jd.ensure(Type_UInt) {
-		return uint(jd.data.(uint64))
+	if jd.ensure(Type_Double) {
+		return uint(jd.data.(float64))
 	}
 	return 0
 }
 
 func (jd *JsonData) GetUInt64() uint64 {
-	if jd.ensure(Type_UInt) {
-		return jd.data.(uint64)
+	if jd.ensure(Type_Double) {
+		return uint64(jd.data.(float64))
 	}
 	return 0
+}
+
+func (jd *JsonData) GetBool() bool {
+	if jd.ensure(Type_Bool) {
+		return jd.data.(bool)
+	}
+	return false
 }
 
 func (jd *JsonData) SetString(value string) {
@@ -252,26 +258,26 @@ func (jd *JsonData) SetString(value string) {
 }
 
 func (jd *JsonData) SetInt32(value int) {
-	if jd.ensure(Type_Int) {
-		jd.data = int64(value)
+	if jd.ensure(Type_Double) {
+		jd.data = float64(value)
 	}
 }
 
 func (jd *JsonData) SetInt64(value int64) {
-	if jd.ensure(Type_Int) {
-		jd.data = value
+	if jd.ensure(Type_Double) {
+		jd.data = float64(value)
 	}
 }
 
 func (jd *JsonData) SetUInt32(value uint) {
-	if jd.ensure(Type_UInt) {
-		jd.data = uint64(value)
+	if jd.ensure(Type_Double) {
+		jd.data = float64(value)
 	}
 }
 
 func (jd *JsonData) SetUInt64(value uint64) {
-	if jd.ensure(Type_UInt) {
-		jd.data = value
+	if jd.ensure(Type_Double) {
+		jd.data = float64(value)
 	}
 }
 
@@ -283,6 +289,11 @@ func (jd *JsonData) SetFloat32(value float32) {
 
 func (jd *JsonData) SetFloat64(value float64) {
 	if jd.ensure(Type_Double) {
+		jd.data = value
+	}
+}
+func (jd *JsonData) SetBool(value bool) {
+	if jd.ensure(Type_Bool) {
 		jd.data = value
 	}
 }

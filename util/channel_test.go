@@ -3,13 +3,14 @@ package util_test
 import (
 	"context"
 	"fmt"
-	"github.com/ntfox0001/svrLib/util"
 	"sync"
 	"testing"
+
+	"github.com/ntfox0001/svrLib/util"
 )
 
-func TestFifo1(t *testing.T) {
-	f := util.NewFifo()
+func TestChannel1(t *testing.T) {
+	f := util.NewChannel()
 
 	w := sync.WaitGroup{}
 
