@@ -29,3 +29,19 @@ func JdMsgFrom(msgId string, from *litjson.JsonData) *litjson.JsonData {
 
 	return jd
 }
+
+func JdMsgSetKeep(jd *litjson.JsonData, key string, value interface{}) {
+	if !jd.HasKey(MsgKeepDataName) {
+		jd.SetKey(MsgKeepDataName, litjson.NewJsonData())
+	}
+	jd.Get(MsgKeepDataName).SetKey(key, value)
+}
+
+func JdMsgGetKeep(jd *litjson.JsonData, key string) *litjson.JsonData {
+	keepjd := jd.Get(MsgKeepDataName)
+	if keepjd != nil {
+		return keepjd.Get(key)
+	}
+
+	return nil
+}
