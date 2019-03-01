@@ -96,8 +96,7 @@ func (jd *JsonData) ensure(valueType int) bool {
 func (jd *JsonData) Get(key string) *JsonData {
 	if jd.ensure(Type_Map) {
 		if v, ok := jd.data.(map[string]*JsonData)[key]; ok {
-			newjd := NewJsonDataFromObject(v.data)
-			return newjd
+			return v
 		}
 	}
 	return nil
@@ -138,8 +137,7 @@ func (jd *JsonData) Index(id int) *JsonData {
 			return nil
 		}
 
-		newjd := NewJsonDataFromObject(jd.data.([]*JsonData)[id].data)
-		return newjd
+		return jd.data.([]*JsonData)[id]
 	}
 	return nil
 }
@@ -297,7 +295,18 @@ func (jd *JsonData) SetBool(value bool) {
 		jd.data = value
 	}
 }
-
+func (jd *JsonData) Map() map[string]*JsonData {
+	if jd.ensure(Type_Map) {
+		return jd.data.(map[string]*JsonData)
+	}
+	return nil
+}
+func (jd *JsonData) List() []*JsonData {
+	if jd.ensure(Type_List) {
+		return jd.data.([]*JsonData)
+	}
+	return nil
+}
 func (jd *JsonData) ToObject() interface{} {
 	switch jd.valueType {
 	case Type_Map:

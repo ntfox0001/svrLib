@@ -6,6 +6,7 @@ import (
 	"testing"
 
 	"github.com/ntfox0001/svrLib/litjson"
+	"github.com/ntfox0001/svrLib/util"
 )
 
 func Test1(t *testing.T) {
@@ -57,4 +58,15 @@ func Test4(t *testing.T) {
 	fmt.Println(jd.ToJson())
 
 	fmt.Println(jd.Get("bb").GetBool())
+}
+
+func Test5(t *testing.T) {
+	jd := util.JdMsg("LoginReq")
+	jd.SetKey("keep", litjson.NewJsonData())
+	jd.Get("keep").SetKey("gameId", 1)
+	jd.SetKey("list", litjson.NewJsonData())
+	jd.Get("list").Append("fff")
+	jd.Get("list").Append(123)
+	jd.Get("list").Append(true)
+	fmt.Println(jd.ToJson())
 }
