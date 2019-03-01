@@ -1,9 +1,10 @@
 package selectCase
 
 import (
-	"github.com/ntfox0001/svrLib/selectCase/selectCaseInterface"
 	"reflect"
 	"sync/atomic"
+
+	"github.com/ntfox0001/svrLib/selectCase/selectCaseInterface"
 
 	"github.com/ntfox0001/svrLib/log"
 )
@@ -47,7 +48,7 @@ func NewSelectLoop(name string, actSize int, preRegSize int) *SelectLoop {
 		handler:     NewEventChanHandler(name, actSize, preRegSize),
 		quitChan:    make(chan interface{}, 1),
 	}
-	sl.slHelper = &SelectLoopHelper{selectLoop: sl}
+	sl.slHelper = NewSelectLoopHelper(sl)
 
 	sl.initSelectCase(reflect.ValueOf(sl.quitChan), sl.quit)
 	sl.initSelectCase(reflect.ValueOf(sl.actChan), sl.processMsg)
@@ -65,7 +66,7 @@ func NewSelectLoop2(name string, handler selectCaseInterface.IEventChanHandler, 
 		handler:     handler,
 		quitChan:    make(chan interface{}, 1),
 	}
-	sl.slHelper = &SelectLoopHelper{selectLoop: sl}
+	sl.slHelper = NewSelectLoopHelper(sl)
 
 	sl.initSelectCase(reflect.ValueOf(sl.quitChan), sl.quit)
 	sl.initSelectCase(reflect.ValueOf(sl.actChan), sl.processMsg)
