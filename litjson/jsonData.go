@@ -58,7 +58,9 @@ func NewJsonDataFromObject(obj interface{}) *JsonData {
 }
 
 func getType(obj interface{}) int {
-
+	if obj == nil {
+		return Type_None
+	}
 	switch obj.(type) {
 	case bool:
 		return Type_Bool
@@ -326,11 +328,12 @@ func (jd *JsonData) ToObject() interface{} {
 	}
 }
 
-func (jd *JsonData) ToJson() (string, error) {
+func (jd *JsonData) ToJson() string {
 	if json, err := jsoniter.ConfigCompatibleWithStandardLibrary.MarshalToString(jd.ToObject()); err != nil {
-		return "", err
+		log.Error("JsonData", "error", err.Error())
+		return ""
 	} else {
-		return json, nil
+		return json
 	}
 
 }
