@@ -1,6 +1,8 @@
 package litjson
 
 import (
+	"errors"
+
 	jsoniter "github.com/json-iterator/go"
 	"github.com/ntfox0001/svrLib/log"
 )
@@ -104,6 +106,17 @@ func (jd *JsonData) Get(key string) *JsonData {
 	return nil
 }
 
+func (jd *JsonData) Safe_Get(key string) (*JsonData, error) {
+	if jd.ensure(Type_Map) {
+		if v, ok := jd.data.(map[string]*JsonData)[key]; ok {
+
+			return v, nil
+		}
+		return nil, errors.New("No found item.")
+	}
+	return nil, errors.New("Type error.")
+}
+
 func (jd *JsonData) SetKey(key string, value interface{}) {
 	if jd.ensure(Type_Map) {
 		jd.data.(map[string]*JsonData)[key] = jd.isJsonData(value)
@@ -142,6 +155,17 @@ func (jd *JsonData) Index(id int) *JsonData {
 		return jd.data.([]*JsonData)[id]
 	}
 	return nil
+}
+
+func (jd *JsonData) Safe_Index(id int) (*JsonData, error) {
+	if jd.ensure(Type_List) {
+		if jd.Len() >= id {
+			return nil, errors.New("id overflow.")
+		}
+
+		return jd.data.([]*JsonData)[id], nil
+	}
+	return nil, errors.New("Type error.")
 }
 
 func (jd *JsonData) SetIndex(id int, value interface{}) {

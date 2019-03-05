@@ -70,3 +70,16 @@ func Test5(t *testing.T) {
 	jd.Get("list").Append(true)
 	fmt.Println(jd.ToJson())
 }
+func Test6(t *testing.T) {
+	jd := litjson.NewJsonDataFromJson(`{"int":5}`)
+	fmt.Println(jd.Get("int").GetFloat32())
+}
+
+func Test7(t *testing.T) {
+	jd := litjson.NewJsonDataFromJson(`{"int":5}`)
+	njd, err := jd.Safe_Get("fff")
+	fmt.Println(njd, err)
+
+	njd1, err1 := jd.Safe_Get("int")
+	fmt.Println(njd1.ToJson(), err1)
+}
