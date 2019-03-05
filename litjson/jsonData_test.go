@@ -83,3 +83,18 @@ func Test7(t *testing.T) {
 	njd1, err1 := jd.Safe_Get("int")
 	fmt.Println(njd1.ToJson(), err1)
 }
+
+type TestInt struct {
+	A int
+	B float32
+	C string
+}
+
+func Test8(t *testing.T) {
+	jd := litjson.NewJsonDataFromJson(`{"A":5,"b":2,"c":"ff","d":true}`)
+	bb := TestInt{}
+
+	err := jd.Conv2Obj(&bb)
+
+	fmt.Println(bb, err)
+}
