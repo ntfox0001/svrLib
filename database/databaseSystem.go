@@ -48,12 +48,12 @@ func (d *DatabaseSystem) NewOperation(sql string, args ...interface{}) *DataOper
 }
 
 // 同步执行数据库操作，操作完成返回结果
-func (d *DatabaseSystem) SyncExecOperation(op *DataOperation) (*DataResult, error) {
+func (d *DatabaseSystem) SyncExecOperation(op IOperation) (*DataResult, error) {
 	return d.db.ExecOperation(op)
 }
 
 // 异步执行，callbackHelper 是用来接收消息的selectLoop
-func (d *DatabaseSystem) ExecOperation(callbackHelper selectCaseInterface.ISelectLoopHelper, msgId string, op *DataOperation) {
+func (d *DatabaseSystem) ExecOperation(callbackHelper selectCaseInterface.ISelectLoopHelper, msgId string, op IOperation) {
 	// 在一个新的协程中调用
 	exec := func(data interface{}) {
 		if rt, err := d.db.ExecOperation(op); err != nil {
@@ -70,7 +70,7 @@ func (d *DatabaseSystem) ExecOperation(callbackHelper selectCaseInterface.ISelec
 }
 
 // 异步执行接口，功能和ExecOperation一样使用CallbackHandler为参数，方便使用
-func (d *DatabaseSystem) ExecOperationForCB(cb *selectCaseInterface.CallbackHandler, op *DataOperation) {
+func (d *DatabaseSystem) ExecOperationForCB(cb *selectCaseInterface.CallbackHandler, op IOperation) {
 	// 在一个新的协程中调用
 	exec := func(data interface{}) {
 		if rt, err := d.db.ExecOperation(op); err != nil {
@@ -89,7 +89,7 @@ func (d *DatabaseSystem) ExecOperationForCB(cb *selectCaseInterface.CallbackHand
 }
 
 // 异步执行
-func (d *DatabaseSystem) ExecOperationNoReturn(op *DataOperation) {
+func (d *DatabaseSystem) ExecOperationNoReturn(op IOperation) {
 	// 在一个新的协程中调用
 	exec := func(data interface{}) {
 		if _, err := d.db.ExecOperation(op); err != nil {

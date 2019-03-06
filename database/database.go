@@ -56,11 +56,11 @@ func (d *Database) NewOperation(sql string, args ...interface{}) *DataOperation 
 }
 
 // 执行sql，纯同步接口
-func (d *Database) ExecOperation(op *DataOperation) (*DataResult, error) {
+func (d *Database) ExecOperation(op IOperation) (*DataResult, error) {
 
 	rt, err := op.exec(d.sqldb)
 	if err != nil {
-		log.Error("database", "exec", err.Error(), "sql", op.sql, "params", op.args)
+		log.Error("database", "exec", err.Error(), "sql", op.ToString())
 		return nil, err
 	}
 

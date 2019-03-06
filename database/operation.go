@@ -21,11 +21,6 @@ type DataOperation struct {
 	UserData    interface{}
 }
 
-type idbOperation interface {
-	Query(query string, args ...interface{}) (*sql.Rows, error)
-	Prepare(query string) (*sql.Stmt, error)
-}
-
 // 创建一个operation对象，operation对象是非线程安全的
 func newOperation(sql string, args ...interface{}) *DataOperation {
 	op := &DataOperation{
