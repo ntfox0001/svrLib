@@ -115,22 +115,18 @@ func (d *DataOperation) callData(opt idbOperation) *DataResult {
 }
 
 // prepare只是给update，insert，delete语句使用的，这个接口不会返回任何数据集
-func (d *DataOperation) SetOperationData(pData *PrepareData) error {
+func (d *DataOperation) SetOperationData(pData *PrepareData) {
 	d.usePrepare = true
 	d.dataSet = pData.dataSet
-
-	return nil
 }
 
 // prepare只是给update，insert，delete语句使用的，这个接口不会返回任何数据集
-func (d *DataOperation) SetUsePrepare(use bool) error {
+func (d *DataOperation) SetUsePrepare(use bool) {
 	d.usePrepare = use
-	return nil
 }
 
-func (d *DataOperation) SetOperationTransaction(ts bool) error {
+func (d *DataOperation) SetOperationTransaction(ts bool) {
 	d.transaction = ts
-	return nil
 }
 
 func (d *DataOperation) GetSql() string {

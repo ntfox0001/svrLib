@@ -47,6 +47,11 @@ func (d *DatabaseSystem) NewOperation(sql string, args ...interface{}) *DataOper
 	return newOperation(sql, args...)
 }
 
+// 创建一个事物
+func (d *DatabaseSystem) NewTranscation() *Transcation {
+	return newTranscation(d.db.sqldb)
+}
+
 // 同步执行数据库操作，操作完成返回结果
 func (d *DatabaseSystem) SyncExecOperation(op IOperation) (*DataResult, error) {
 	return d.db.ExecOperation(op)

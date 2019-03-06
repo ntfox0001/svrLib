@@ -66,12 +66,14 @@ func getType(obj interface{}) int {
 	switch obj.(type) {
 	case bool:
 		return Type_Bool
-	case int:
+	case int32:
 	case int64:
-	case uint:
+	case uint32:
 	case uint64:
 	case float32:
 	case float64:
+	case int:
+	case uint:
 		return Type_Double
 	case string:
 		return Type_String
@@ -240,7 +242,14 @@ func (jd *JsonData) GetFloat64() float64 {
 	return 0
 }
 
-func (jd *JsonData) GetInt32() int {
+func (jd *JsonData) GetInt32() int32 {
+	if jd.ensure(Type_Double) {
+		return int32(jd.data.(float64))
+	}
+	return 0
+}
+
+func (jd *JsonData) GetInt() int {
 	if jd.ensure(Type_Double) {
 		return int(jd.data.(float64))
 	}
@@ -254,7 +263,14 @@ func (jd *JsonData) GetInt64() int64 {
 	return 0
 }
 
-func (jd *JsonData) GetUInt32() uint {
+func (jd *JsonData) GetUInt32() uint32 {
+	if jd.ensure(Type_Double) {
+		return uint32(jd.data.(float64))
+	}
+	return 0
+}
+
+func (jd *JsonData) GetUInt() uint {
 	if jd.ensure(Type_Double) {
 		return uint(jd.data.(float64))
 	}
@@ -281,7 +297,13 @@ func (jd *JsonData) SetString(value string) {
 	}
 }
 
-func (jd *JsonData) SetInt32(value int) {
+func (jd *JsonData) SetInt32(value int32) {
+	if jd.ensure(Type_Double) {
+		jd.data = float64(value)
+	}
+}
+
+func (jd *JsonData) SetInt(value int) {
 	if jd.ensure(Type_Double) {
 		jd.data = float64(value)
 	}
@@ -293,7 +315,13 @@ func (jd *JsonData) SetInt64(value int64) {
 	}
 }
 
-func (jd *JsonData) SetUInt32(value uint) {
+func (jd *JsonData) SetUInt32(value uint32) {
+	if jd.ensure(Type_Double) {
+		jd.data = float64(value)
+	}
+}
+
+func (jd *JsonData) SetUInt(value uint) {
 	if jd.ensure(Type_Double) {
 		jd.data = float64(value)
 	}

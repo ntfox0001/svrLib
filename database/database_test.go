@@ -1,9 +1,10 @@
 package database_test
 
 import (
+	"testing"
+
 	"github.com/ntfox0001/svrLib/database"
 	"github.com/ntfox0001/svrLib/selectCase"
-	"testing"
 )
 
 func BenchmarkDB(b *testing.B) {
