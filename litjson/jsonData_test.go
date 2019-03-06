@@ -71,12 +71,15 @@ func Test5(t *testing.T) {
 	fmt.Println(jd.ToJson())
 }
 func Test6(t *testing.T) {
-	jd := litjson.NewJsonDataFromJson(`{"int":12345678901234567890}`)
+	jd := litjson.NewJsonDataFromJson(`{"int":18446744073709551615}`)
 	fmt.Println(jd.Get("int").GetFloat32())
+	fmt.Println(jd.Get("int").GetFloat64())
 	fmt.Println(jd.Get("int").GetInt32())
 	fmt.Println(jd.Get("int").GetUInt32())
 	fmt.Println(jd.Get("int").GetInt64())
 	fmt.Println(jd.Get("int").GetUInt64())
+	fmt.Println(jd.Get("int").GetUInt())
+	fmt.Println(^uint64(0))
 }
 
 func Test7(t *testing.T) {
