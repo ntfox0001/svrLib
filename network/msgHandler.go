@@ -98,7 +98,7 @@ func (h *WsMsgHandler) DispatchJsonMsg(msg map[string]interface{}) error {
 		} else {
 			if handler, ok := h.jsonMsgMap[msgId.(string)]; ok {
 				// handler应该有缓存处理
-				if err := callJsonFunc(handler, msg, h.useExternal); err != nil {
+				if err := callJsonFunc(handler, msg, h.UserData); err != nil {
 					return err
 				}
 			}
