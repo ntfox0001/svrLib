@@ -1,12 +1,14 @@
 package selectCaseInterface
 
-import "reflect"
+import (
+	"reflect"
+)
 
 type ISelectLoopHelper interface {
 	// 向loop发送消息
 	SendMsgToMe(data EventChanMsg)
 	// 向loop的common handler注册消息
-	RegisterEvent(event string, f func(interface{}) bool) uint64
+	RegisterEvent(event string, f func(EventChanMsg)) uint64
 	UnregisterEvent(id uint64)
 
 	// 向loop中注册通道和处理函数

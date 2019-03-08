@@ -2,13 +2,13 @@ package dbtools
 
 import (
 	"fmt"
-	"github.com/ntfox0001/svrLib/commonError"
-	"github.com/ntfox0001/svrLib/database"
-	"github.com/ntfox0001/svrLib/util"
 	"reflect"
 	"strings"
 
-	"github.com/inconshreveable/log15"
+	"github.com/ntfox0001/svrLib/commonError"
+	"github.com/ntfox0001/svrLib/database"
+	"github.com/ntfox0001/svrLib/log"
+	"github.com/ntfox0001/svrLib/util"
 )
 
 type Table struct {
@@ -37,7 +37,7 @@ func NewTable(dbTable interface{}) (*Table, error) {
 			table.Name = sf.Name
 		case "CreateProcedure":
 			if p, err := NewProcedure(&sf); err != nil {
-				log15.Error("Procedure error", "err", err.Error())
+				log.Error("Procedure error", "err", err.Error())
 				return nil, err
 			} else {
 				table.procedures = append(table.procedures, p)
@@ -132,7 +132,7 @@ func (t *Table) execSql(sql string, dbSys *database.DatabaseSystem) {
 	} else {
 		op := dbSys.NewOperation(sql)
 		if _, err := dbSys.SyncExecOperation(op); err != nil {
-			log15.Error("BuildDB error", "err", err.Error(), "sql", op.GetSql())
+			log.Error("BuildDB error", "err", err.Error(), "sql", op.GetSql())
 		}
 	}
 }
@@ -203,7 +203,7 @@ func (t *Table) buildQueryAllTableSql() string {
 // 基于某个列的查询删除和更新, 一般这个列必须是unique的
 func (t *Table) buildUDQ(col *ColumnDefinition) []string {
 	if !col.UniqIdx && !col.PrimaryKey {
-		log15.Warn("This is a non-unique col.", "col", col.Name)
+		log.Warn("This is a non-unique col.", "col", col.Name)
 	}
 	sqls := make([]string, 3, 3)
 

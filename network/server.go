@@ -5,11 +5,12 @@ import (
 	"crypto/tls"
 	"crypto/x509"
 	"fmt"
-	"github.com/ntfox0001/svrLib/commonError"
-	"github.com/ntfox0001/svrLib/network/networkInterface"
 	"io/ioutil"
 	"net/http"
 	"time"
+
+	"github.com/ntfox0001/svrLib/commonError"
+	"github.com/ntfox0001/svrLib/network/networkInterface"
 
 	"github.com/ntfox0001/svrLib/log"
 

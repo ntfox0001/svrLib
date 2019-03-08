@@ -24,7 +24,7 @@ func NewSelectLoopHelper(s *SelectLoop) *SelectLoopHelper {
 func (s *SelectLoopHelper) SendMsgToMe(data selectCaseInterface.EventChanMsg) {
 	s.selectLoop.handler.Touch(data)
 }
-func (s *SelectLoopHelper) RegisterEvent(event string, f func(interface{}) bool) uint64 {
+func (s *SelectLoopHelper) RegisterEvent(event string, f func(selectCaseInterface.EventChanMsg)) uint64 {
 	return s.selectLoop.handler.RegisterEvent(event, f)
 }
 func (s *SelectLoopHelper) UnregisterEvent(id uint64) {
@@ -62,11 +62,8 @@ func (s *SelectLoopHelper) SyncRunIn(f func() interface{}) interface{} {
 }
 
 // 在协程里运行指定函数
-func (s *SelectLoopHelper) onRunInReq(data interface{}) bool {
-	msg := data.(selectCaseInterface.EventChanMsg)
+func (s *SelectLoopHelper) onRunInReq(msg selectCaseInterface.EventChanMsg) {
 	f := msg.Content.(func())
 
 	f()
-
-	return true
 }

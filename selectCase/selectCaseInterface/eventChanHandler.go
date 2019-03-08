@@ -11,7 +11,7 @@ type IEventChanHandler interface {
 	Touch(msg EventChanMsg)
 
 	// 注册事件，返回唯一id用于反注册
-	RegisterEvent(event string, f func(interface{}) bool) uint64
+	RegisterEvent(event string, f func(EventChanMsg)) uint64
 	UnregisterEvent(id uint64)
 
 	Close()

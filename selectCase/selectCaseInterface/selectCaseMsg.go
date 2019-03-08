@@ -23,5 +23,5 @@ type EventRegMsg struct {
 	Reg         bool
 	EventId     string
 	EventFuncId uint64
-	F           func(interface{}) bool
+	F           func(EventChanMsg)
 }

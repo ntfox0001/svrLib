@@ -38,52 +38,74 @@ func NewJsonDataFromJson(json string) *JsonData {
 func NewJsonDataFromObject(obj interface{}) *JsonData {
 	jd := &JsonData{}
 
-	jd.valueType = getType(obj)
-	switch jd.valueType {
-	case Type_Map:
-		nmap := make(map[string]*JsonData)
-		for k, v := range obj.(map[string]interface{}) {
-			nmap[k] = NewJsonDataFromObject(v)
-		}
-		jd.data = nmap
-	case Type_List:
+	if obj == nil {
+		jd.valueType = Type_None
+		return jd
+	}
+	switch obj.(type) {
+	case bool:
+		jd.data = obj.(bool)
+		jd.valueType = Type_Bool
+		break
+	case int32:
+		jd.data = float64(obj.(int32))
+		jd.valueType = Type_Double
+		break
+	case int64:
+		jd.data = float64(obj.(int64))
+		jd.valueType = Type_Double
+		break
+	case uint32:
+		jd.data = float64(obj.(uint32))
+		jd.valueType = Type_Double
+		break
+	case uint64:
+		jd.data = float64(obj.(uint64))
+		jd.valueType = Type_Double
+		break
+	case float32:
+		jd.data = float64(obj.(float32))
+		jd.valueType = Type_Double
+		break
+	case float64:
+		jd.data = obj.(float64)
+		jd.valueType = Type_Double
+		break
+	case int:
+		jd.data = float64(obj.(int))
+		jd.valueType = Type_Double
+		break
+	case uint:
+		jd.data = float64(obj.(uint))
+		jd.valueType = Type_Double
+		break
+	case string:
+		jd.data = obj
+		jd.valueType = Type_String
+		break
+	case []interface{}:
 		nlist := make([]*JsonData, 0)
 		for _, v := range obj.([]interface{}) {
 			nlist = append(nlist, NewJsonDataFromObject(v))
 		}
 		jd.data = nlist
-	default:
-		jd.data = obj
+		jd.valueType = Type_List
+		break
+	case map[string]interface{}:
+		nmap := make(map[string]*JsonData)
+		for k, v := range obj.(map[string]interface{}) {
+			nmap[k] = NewJsonDataFromObject(v)
+		}
+		jd.data = nmap
+		jd.valueType = Type_Map
+		break
+	case *JsonData:
+		return obj.(*JsonData)
 	}
 
 	return jd
 }
 
-func getType(obj interface{}) int {
-	if obj == nil {
-		return Type_None
-	}
-	switch obj.(type) {
-	case bool:
-		return Type_Bool
-	case int32:
-	case int64:
-	case uint32:
-	case uint64:
-	case float32:
-	case float64:
-	case int:
-	case uint:
-		return Type_Double
-	case string:
-		return Type_String
-	case []interface{}:
-		return Type_List
-	case map[string]interface{}:
-		return Type_Map
-	}
-	return Type_None
-}
 func (jd *JsonData) ensure(valueType int) bool {
 	// 如果还没有初始化，那么就用第一次调用的类型
 	if jd.valueType == Type_None {

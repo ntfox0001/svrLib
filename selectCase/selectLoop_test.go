@@ -3,9 +3,10 @@ package selectCase
 import (
 	"bytes"
 	"fmt"
-	"github.com/ntfox0001/svrLib/selectCase/selectCaseInterface"
 	"runtime"
 	"strconv"
+
+	"github.com/ntfox0001/svrLib/selectCase/selectCaseInterface"
 
 	"reflect"
 	"testing"
@@ -16,13 +17,12 @@ func TestSelectLoopLot1(t *testing.T) {
 	loop := NewSelectLoop("test1", 10, 10)
 	count := 0
 
-	loop.GetHelper().RegisterEvent("test1", func(data interface{}) bool {
+	loop.GetHelper().RegisterEvent("test1", func(msg selectCaseInterface.EventChanMsg) {
 		if count%1000 == 0 {
-			fmt.Println("test1 call:", count, " id:", data)
+			fmt.Println("test1 call:", count, " id:", msg)
 		}
 
 		count++
-		return true
 	})
 
 	go loop.Run()

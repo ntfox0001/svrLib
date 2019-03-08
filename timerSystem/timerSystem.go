@@ -2,11 +2,12 @@ package timerSystem
 
 import (
 	"container/list"
-	"github.com/ntfox0001/svrLib/selectCase"
-	"github.com/ntfox0001/svrLib/selectCase/selectCaseInterface"
 	"reflect"
 	"sync/atomic"
 	"time"
+
+	"github.com/ntfox0001/svrLib/selectCase"
+	"github.com/ntfox0001/svrLib/selectCase/selectCaseInterface"
 
 	"github.com/ntfox0001/svrLib/log"
 )
@@ -71,14 +72,11 @@ func (ts *TimerSystem) Initial() error {
 func (ts *TimerSystem) Release() {
 	ts.Release()
 }
-func (ts *TimerSystem) addTimer(data interface{}) bool {
-	msg := data.(selectCaseInterface.EventChanMsg)
+func (ts *TimerSystem) addTimer(msg selectCaseInterface.EventChanMsg) {
 	item := msg.Content.(*TimerItem)
 	ts.timerItemList.PushBack(item)
-	return true
 }
-func (ts *TimerSystem) delTimer(data interface{}) bool {
-	msg := data.(selectCaseInterface.EventChanMsg)
+func (ts *TimerSystem) delTimer(msg selectCaseInterface.EventChanMsg) {
 	id := msg.Content.(uint64)
 	for i := ts.timerItemList.Front(); i != nil; i = i.Next() {
 		if i.Value.(*TimerItem).id == id {
@@ -86,7 +84,6 @@ func (ts *TimerSystem) delTimer(data interface{}) bool {
 			break
 		}
 	}
-	return true
 }
 
 func (ts *TimerSystem) tickerCallback(data interface{}) bool {

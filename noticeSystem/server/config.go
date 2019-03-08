@@ -3,8 +3,8 @@ package main
 import (
 	"io/ioutil"
 
-	log "github.com/inconshreveable/log15"
 	jsoniter "github.com/json-iterator/go"
+	"github.com/ntfox0001/svrLib/log"
 )
 
 type WxMpCfg struct {

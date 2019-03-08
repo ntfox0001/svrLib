@@ -28,7 +28,7 @@ func (s *SelectChannel) SendMsgToMe(data selectCaseInterface.EventChanMsg) {
 	s.eventChan <- data.Content
 }
 
-func (s *SelectChannel) RegisterEvent(event string, f func(interface{}) bool) uint64 {
+func (s *SelectChannel) RegisterEvent(event string, f func(selectCaseInterface.EventChanMsg)) uint64 {
 	return 0
 }
 func (s *SelectChannel) UnregisterEvent(id uint64) {

@@ -6,17 +6,18 @@ import (
 	"io"
 	"io/ioutil"
 	"net/http"
-	"oryxserver/log15Ex"
-	"oryxserver/logic/cmd/wxAccessRefreshServer/wxAccessRefMsg"
-	"oryxserver/network"
-	"oryxserver/selectCase"
-	"oryxserver/timerSystem"
+
 	"os"
 	"os/signal"
 	"strings"
 
-	log "github.com/inconshreveable/log15"
+	"github.com/ntfox0001/svrLib/network"
+	"github.com/ntfox0001/svrLib/noticeSystem/wxAccessRefreshServer/wxAccessRefMsg"
+	"github.com/ntfox0001/svrLib/selectCase"
+	"github.com/ntfox0001/svrLib/timerSystem"
+
 	jsoniter "github.com/json-iterator/go"
+	"github.com/ntfox0001/svrLib/log"
 )
 
 var (
@@ -38,7 +39,7 @@ func init() {
 func main() {
 	flag.Parse()
 
-	h1 := log15Ex.CallerFileHandler(log.LvlFilterHandler(log.LvlDebug, log.StreamHandler(os.Stdout, log15Ex.LogfmtFormat())))
+	h1 := log.CallerFileHandler(log.LvlFilterHandler(log.LvlDebug, log.StreamHandler(os.Stdout, log15Ex.LogfmtFormat())))
 
 	h2 := log.Must.FileHandler("watrSvr.log", log15Ex.LogfmtFormat())
 	log.Root().SetHandler(log.MultiHandler(h1, h2))

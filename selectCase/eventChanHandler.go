@@ -2,10 +2,11 @@ package selectCase
 
 import (
 	"fmt"
-	"github.com/ntfox0001/svrLib/selectCase/selectCaseInterface"
 	"reflect"
 	"runtime/debug"
 	"sync/atomic"
+
+	"github.com/ntfox0001/svrLib/selectCase/selectCaseInterface"
 
 	"github.com/ntfox0001/svrLib/log"
 )
@@ -13,7 +14,7 @@ import (
 type EventChanHandler struct {
 	eventChan    chan selectCaseInterface.EventChanMsg
 	regChan      chan selectCaseInterface.EventRegMsg
-	eventMap     map[string]map[uint64]func(interface{}) bool
+	eventMap     map[string]map[uint64]func(selectCaseInterface.EventChanMsg)
 	eventIdMap   map[uint64]string
 	count        uint64
 	name         string
@@ -27,7 +28,7 @@ func NewEventChanHandler(name string, eventChanSize, preRegSize int) *EventChanH
 	return &EventChanHandler{
 		eventChan:    make(chan selectCaseInterface.EventChanMsg, eventChanSize),
 		regChan:      make(chan selectCaseInterface.EventRegMsg, preRegSize),
-		eventMap:     make(map[string]map[uint64]func(interface{}) bool),
+		eventMap:     make(map[string]map[uint64]func(selectCaseInterface.EventChanMsg)),
 		eventIdMap:   make(map[uint64]string),
 		count:        1,
 		name:         name,
@@ -103,7 +104,7 @@ func (h *EventChanHandler) DispatchEvent(data interface{}) (rt bool) {
 	return true
 }
 
-func (h *EventChanHandler) execEvent(f func(data interface{}) bool, msg selectCaseInterface.EventChanMsg) {
+func (h *EventChanHandler) execEvent(f func(data selectCaseInterface.EventChanMsg), msg selectCaseInterface.EventChanMsg) {
 	defer func() {
 		if err := recover(); err != nil {
 			es := fmt.Sprintf("\n%s\n", string(debug.Stack()))
@@ -120,7 +121,7 @@ func (h *EventChanHandler) GetNextId() uint64 {
 	return atomic.AddUint64(&h.count, 1)
 }
 
-func (h *EventChanHandler) RegisterEvent(event string, f func(interface{}) bool) uint64 {
+func (h *EventChanHandler) RegisterEvent(event string, f func(selectCaseInterface.EventChanMsg)) uint64 {
 	msg := selectCaseInterface.EventRegMsg{
 		Reg:         true,
 		EventId:     event,
@@ -147,7 +148,7 @@ func (h *EventChanHandler) registerEvent(msg selectCaseInterface.EventRegMsg) {
 	if fs, ok := h.eventMap[msg.EventId]; ok {
 		fs[msg.EventFuncId] = msg.F
 	} else {
-		fs := make(map[uint64]func(interface{}) bool)
+		fs := make(map[uint64]func(selectCaseInterface.EventChanMsg))
 		fs[msg.EventFuncId] = msg.F
 		h.eventMap[msg.EventId] = fs
 	}

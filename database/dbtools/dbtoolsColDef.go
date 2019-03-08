@@ -2,12 +2,12 @@ package dbtools
 
 import (
 	"fmt"
-	"github.com/ntfox0001/svrLib/commonError"
-	"github.com/ntfox0001/svrLib/util"
 	"reflect"
 	"strings"
 
-	"github.com/inconshreveable/log15"
+	"github.com/ntfox0001/svrLib/commonError"
+	"github.com/ntfox0001/svrLib/log"
+	"github.com/ntfox0001/svrLib/util"
 )
 
 type ColumnDefinition struct {
@@ -66,7 +66,7 @@ func NewColumnDefinition(field *reflect.StructField) (*ColumnDefinition, error) 
 			}
 			coldef.Name = jsonName
 			if strings.ToLower(field.Name) != strings.ToLower(jsonName) {
-				log15.Warn("colName is difference.", "colName", jsonName, "filedName", field.Name)
+				log.Warn("colName is difference.", "colName", jsonName, "filedName", field.Name)
 			}
 		} else {
 			coldef.Name = field.Name
