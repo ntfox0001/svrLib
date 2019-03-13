@@ -3,6 +3,7 @@ package database
 import (
 	"container/list"
 	"fmt"
+
 	"github.com/ntfox0001/svrLib/commonError"
 
 	"github.com/ntfox0001/svrLib/log"
@@ -32,4 +33,12 @@ func (p *PrepareData) AddData(args ...interface{}) error {
 	}
 	p.dataSet.PushBack(args)
 	return nil
+}
+
+func (p *PrepareData) Len() int {
+	return p.dataSet.Len()
+}
+
+func (p *PrepareData) DataCount() int {
+	return p.dataCount
 }

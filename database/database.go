@@ -61,7 +61,7 @@ func (d *Database) ExecOperation(op IOperation) (*DataResult, error) {
 	rt, err := op.exec(d.sqldb)
 	if err != nil {
 		log.Error("database", "exec", err.Error(), "sql", op.ToString())
-		return nil, err
+		return rt, err
 	}
 
 	return rt, nil

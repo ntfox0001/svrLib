@@ -76,18 +76,32 @@ runable:
 	f.quitChan <- struct{}{}
 }
 
-// 压入一个数据，当程序退出时，这个接口会抛出异常
-func (f *Channel) Push(data interface{}) {
+// 压入一个数据，当程序退出时，返回假
+func (f *Channel) Push(data interface{}) (rt bool) {
+	defer func() {
+		if err := recover(); err != nil {
+			rt = false
+			return
+		}
+	}()
 	f.inChan <- data
+	return true
 }
 
-// 弹出一个数据，当程序退出时，这个接口会抛出异常
-func (f *Channel) Pop(ctx context.Context) interface{} {
+// 弹出一个数据，当程序退出时，返回假
+func (f *Channel) Pop(ctx context.Context) (data interface{}, rt error) {
+	defer func() {
+		if err := recover(); err != nil {
+			data = nil
+			rt = err.(error)
+			return
+		}
+	}()
 	select {
 	case m := <-f.outChan:
-		return m
+		return m, nil
 	case <-ctx.Done():
-		return nil
+		return nil, nil
 	}
 }
 

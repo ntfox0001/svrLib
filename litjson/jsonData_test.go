@@ -5,11 +5,13 @@ import (
 	"reflect"
 	"testing"
 
+	"github.com/json-iterator/go/extra"
 	"github.com/ntfox0001/svrLib/litjson"
 	"github.com/ntfox0001/svrLib/util"
 )
 
 func Test1(t *testing.T) {
+
 	a := make([]int, 10, 10)
 
 	var b interface{}
@@ -92,13 +94,14 @@ func Test7(t *testing.T) {
 }
 
 type TestInt struct {
-	A int
+	A int `json:"a"`
 	B float32
 	C string
 }
 
 func Test8(t *testing.T) {
-	jd := litjson.NewJsonDataFromJson(`{"A":5,"b":2,"c":"ff","d":true}`)
+	extra.RegisterFuzzyDecoders()
+	jd := litjson.NewJsonDataFromJson(`{"a":"5","b":2,"c":"ff","d":true}`)
 	bb := TestInt{}
 
 	err := jd.Conv2Obj(&bb)

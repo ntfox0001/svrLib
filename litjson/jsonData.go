@@ -24,6 +24,27 @@ type JsonData struct {
 func NewJsonData() *JsonData {
 	return &JsonData{}
 }
+func NewJsonDataByType(jdType int) *JsonData {
+	jd := &JsonData{
+		valueType: jdType,
+	}
+	switch jdType {
+	case Type_Bool:
+		jd.data = false
+		break
+	case Type_String:
+		jd.data = ""
+		break
+	case Type_Double:
+		jd.data = 0.0
+		break
+	case Type_List:
+		jd.data = make([]*JsonData, 0)
+	case Type_Map:
+		jd.data = make(map[string]*JsonData)
+	}
+	return jd
+}
 
 func NewJsonDataFromJson(json string) *JsonData {
 	var obj interface{}
@@ -101,6 +122,12 @@ func NewJsonDataFromObject(obj interface{}) *JsonData {
 		break
 	case *JsonData:
 		return obj.(*JsonData)
+	default:
+		if js, err := jsoniter.ConfigCompatibleWithStandardLibrary.MarshalToString(obj); err != nil {
+			return nil
+		} else {
+			return NewJsonDataFromJson(js)
+		}
 	}
 
 	return jd
