@@ -79,3 +79,33 @@ func SyncHttpPostByHeader(url string, content string, contentType string, header
 	body, err := ioutil.ReadAll(resp.Body)
 	return string(body), nil
 }
+
+func SyncHttpPostByHeaderWithReturn(url string, content string, contentType string, header map[string]string) (string, http.Header, error) {
+	tr := &http.Transport{
+		TLSClientConfig: &tls.Config{InsecureSkipVerify: true},
+	}
+	client := &http.Client{Transport: tr, Timeout: time.Second * 10}
+
+	req, err := http.NewRequest("POST", url, strings.NewReader(content))
+	if err != nil {
+		log.Error("SyncHttpPostByHeader", "url", url, "error", err.Error())
+		return "", nil, err
+	}
+
+	req.Header.Set("Content-Type", contentType)
+
+	if header != nil {
+		for k, v := range header {
+			req.Header.Set(k, v)
+		}
+	}
+
+	resp, err := client.Do(req)
+	if err != nil {
+		log.Error("SyncHttpPostByHeader", "url", url, "error", err.Error())
+		return "", nil, err
+	}
+	defer resp.Body.Close()
+	body, err := ioutil.ReadAll(resp.Body)
+	return string(body), resp.Header, nil
+}
