@@ -2,9 +2,10 @@ package util_test
 
 import (
 	"fmt"
-	"github.com/ntfox0001/svrLib/util"
 	"testing"
 	"time"
+
+	"github.com/ntfox0001/svrLib/util"
 
 	"github.com/ntfox0001/svrLib/log"
 )
@@ -27,22 +28,24 @@ func Test_Pool(t *testing.T) {
 }
 
 func TestFixedPoos(t *testing.T) {
-	pool := util.NewGoFixedPool("testpool", 5, 5)
+	pool := util.NewGoFixedPool("testpool", 50, 5)
 
 	for j := 0; j < 100; j++ {
 		go func() {
 			for i := 0; i < 100; i++ {
-				fmt.Print("+ ")
+				//fmt.Print("+ ")
 				pool.Go(tttt, i)
 			}
 		}()
 	}
 
-	time.Sleep(time.Second * 10)
+	time.Sleep(time.Second * 200)
 }
 
 func tttt(d interface{}) {
 	//for i := 0; i < 10; i++ {
+	t := time.NewTimer(time.Second * 2)
+	<-t.C
 	fmt.Print(". ")
 	//}
 }

@@ -6,6 +6,10 @@ import (
 	"github.com/ntfox0001/svrLib/log"
 )
 
+type IGoroutinePool interface {
+	Go(f func(data interface{}), data interface{})
+	Release()
+}
 type goItem struct {
 	f    func(data interface{})
 	data interface{}

@@ -15,7 +15,6 @@ type GoroutineFixedPool struct {
 	size          int
 	name          string
 	quitChan      chan interface{}
-	full          bool
 	fullGoItems   *list.List
 }
 
@@ -30,7 +29,6 @@ func NewGoFixedPool(name string, size int, execSize int) *GoroutineFixedPool {
 		execChan:      make(chan goItem, execSize),
 		freeChan:      make(chan int),
 		quitChan:      make(chan interface{}, 1),
-		full:          false,
 		fullGoItems:   list.New(),
 	}
 	for i := 0; i < size; i++ {

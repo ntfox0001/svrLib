@@ -23,7 +23,7 @@ type DatabaseSystemParams struct {
 }
 
 type DatabaseSystem struct {
-	goPool *util.GoroutinePool
+	goPool util.IGoroutinePool
 	db     *Database
 }
 
@@ -34,6 +34,17 @@ func (d *DatabaseSystem) Initial(params DatabaseSystemParams) error {
 		return err
 	}
 	d.goPool = util.NewGoPool("DatabaseSystem", params.GoPoolSize, params.ExecSize)
+	d.db = db
+	return nil
+}
+
+// db底层用多链接实现，可以并发调用，用锁实现线程安全，如果发现瓶颈，这里可以改为多db访问
+func (d *DatabaseSystem) InitialFixPool(params DatabaseSystemParams) error {
+	db, err := NewDatabase(params.IP, params.Port, params.User, params.Password, params.DBName)
+	if err != nil {
+		return err
+	}
+	d.goPool = util.NewGoFixedPool("DatabaseSystem", params.GoPoolSize, params.ExecSize)
 	d.db = db
 	return nil
 }
