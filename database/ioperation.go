@@ -12,4 +12,5 @@ type IOperation interface {
 	GetSql() string
 	GetArgs() []interface{}
 	ToString() string
+	Close()
 }

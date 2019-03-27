@@ -139,3 +139,9 @@ func (d *DataOperation) GetArgs() []interface{} {
 func (d *DataOperation) ToString() string {
 	return fmt.Sprint(d.sql, d.args)
 }
+
+func (d *DataOperation) Close() {
+	if d.stmt != nil {
+		d.stmt.Close()
+	}
+}

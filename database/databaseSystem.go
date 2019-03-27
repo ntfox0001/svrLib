@@ -80,6 +80,7 @@ func (d *DatabaseSystem) ExecOperation(callbackHelper selectCaseInterface.ISelec
 				callbackHelper.SendMsgToMe(msg)
 			}
 		}
+		op.Close()
 	}
 
 	d.goPool.Go(exec, nil)
@@ -99,6 +100,7 @@ func (d *DatabaseSystem) ExecOperationForCB(cb *selectCaseInterface.CallbackHand
 				cb.SendReturnMsgNoReturn(rt)
 			}
 		}
+		op.Close()
 	}
 
 	d.goPool.Go(exec, nil)
