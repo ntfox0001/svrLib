@@ -114,6 +114,7 @@ func (d *DatabaseSystem) ExecOperationNoReturn(op IOperation) {
 			log.Error("ExecOperation", "Err", err.Error())
 		}
 		// 执行成功什么也不干
+		op.Close()
 	}
 
 	d.goPool.Go(exec, nil)
