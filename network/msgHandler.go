@@ -88,7 +88,7 @@ func (h *WsMsgHandler) SendJsonMsg(msg interface{}) error {
 
 func (h *WsMsgHandler) DispatchJsonMsg(msg map[string]interface{}) error {
 	if msgId, ok := msg["msgId"]; !ok {
-		log.Error("network", "jsonMsg", "msgId does not exist .")
+		log.Error("network", "error", "msgId does not exist .", "msg", msg)
 		return commonError.NewCommErr("jsonMsg: msgId does not exist.", NetErrorUnknowMsg)
 	} else {
 		if h.jsonMsgHandler != nil {
