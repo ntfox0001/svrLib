@@ -20,7 +20,6 @@ type GoroutinePool struct {
 	idleItemList  *list.List
 	execChan      chan goItem
 	freeChan      chan int
-	size          int
 	name          string
 	quitChan      chan interface{}
 	pauseChan     chan bool
@@ -83,7 +82,7 @@ runable:
 					g.idleItemList.Remove(g.idleItemList.Front())
 					g.itemChans[id] <- item
 				} else {
-					log.Warn("go pool full", "name", g.name, "size", g.size)
+					log.Warn("go pool full", "name", g.name)
 					go item.f(item.data)
 				}
 			}

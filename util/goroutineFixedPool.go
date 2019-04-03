@@ -12,7 +12,6 @@ type GoroutineFixedPool struct {
 	idleItemList  *list.List
 	execChan      chan goItem
 	freeChan      chan int
-	size          int
 	name          string
 	quitChan      chan interface{}
 	fullGoItems   *list.List
