@@ -1,4 +1,4 @@
-package util
+package goroutinePool
 
 import (
 	"container/list"
@@ -22,9 +22,6 @@ type GoroutinePool struct {
 	freeChan      chan int
 	name          string
 	quitChan      chan interface{}
-	pauseChan     chan bool
-	pause         bool
-	pauseGoItems  *list.List
 }
 
 // 协程池，当需要并发调用并且需要无阻塞时使用，当平时较低并发，偶尔超高并发时使用，并发上限取决于硬件能力
@@ -38,9 +35,6 @@ func NewGoPool(name string, size int, execSize int) *GoroutinePool {
 		execChan:      make(chan goItem, execSize),
 		freeChan:      make(chan int),
 		quitChan:      make(chan interface{}, 1),
-		pauseChan:     make(chan bool),
-		pause:         false,
-		pauseGoItems:  list.New(),
 	}
 	for i := 0; i < size; i++ {
 		goPool.idleItemList.PushBack(i)
@@ -58,45 +52,23 @@ runable:
 		select {
 		case <-g.quitChan:
 			break runable
-		case p := <-g.pauseChan:
-			if p != g.pause {
-				if p == false && g.pause == true {
-					for i := g.pauseGoItems.Front(); i != nil; i = i.Next() {
-						item := i.Value.(goItem)
-						item.f(item.data)
-					}
-					g.pauseGoItems = list.New()
-				}
-				g.pause = p
-			}
-
 		case id := <-g.freeChan:
 			//log.Debug("free", "id", id)
 			g.idleItemList.PushBack(id)
 		case item := <-g.execChan:
-			if g.pause {
-				g.pauseGoItems.PushBack(item)
+			if g.idleItemList.Len() > 0 {
+				id := g.idleItemList.Front().Value.(int)
+				g.idleItemList.Remove(g.idleItemList.Front())
+				g.itemChans[id] <- item
 			} else {
-				if g.idleItemList.Len() > 0 {
-					id := g.idleItemList.Front().Value.(int)
-					g.idleItemList.Remove(g.idleItemList.Front())
-					g.itemChans[id] <- item
-				} else {
-					log.Warn("go pool full", "name", g.name)
-					go item.f(item.data)
-				}
+				log.Warn("go pool full", "name", g.name)
+				go item.f(item.data)
 			}
+
 		}
 	}
 
 	log.Debug("GoPool", g.name, "Release...")
-}
-
-func (g *GoroutinePool) Pause() {
-	g.pauseChan <- true
-}
-func (g *GoroutinePool) Resume() {
-	g.pauseChan <- false
 }
 
 // safe thread

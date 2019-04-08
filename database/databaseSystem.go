@@ -1,8 +1,8 @@
 package database
 
 import (
+	"github.com/ntfox0001/svrLib/goroutinePool"
 	"github.com/ntfox0001/svrLib/selectCase/selectCaseInterface"
-	"github.com/ntfox0001/svrLib/util"
 
 	"github.com/ntfox0001/svrLib/log"
 )
@@ -23,7 +23,7 @@ type DatabaseSystemParams struct {
 }
 
 type DatabaseSystem struct {
-	goPool util.IGoroutinePool
+	goPool goroutinePool.IGoroutinePool
 	db     *Database
 }
 
@@ -33,7 +33,7 @@ func (d *DatabaseSystem) Initial(params DatabaseSystemParams) error {
 	if err != nil {
 		return err
 	}
-	d.goPool = util.NewGoPool("DatabaseSystem", params.GoPoolSize, params.ExecSize)
+	d.goPool = goroutinePool.NewGoPool("DatabaseSystem", params.GoPoolSize, params.ExecSize)
 	d.db = db
 	return nil
 }
@@ -44,7 +44,7 @@ func (d *DatabaseSystem) InitialFixPool(params DatabaseSystemParams) error {
 	if err != nil {
 		return err
 	}
-	d.goPool = util.NewGoFixedPool("DatabaseSystem", params.GoPoolSize, params.ExecSize)
+	d.goPool = goroutinePool.NewGoFixedPool("DatabaseSystem", params.GoPoolSize, params.ExecSize)
 	d.db = db
 	return nil
 }
@@ -90,6 +90,7 @@ func (d *DatabaseSystem) ExecOperation(callbackHelper selectCaseInterface.ISelec
 func (d *DatabaseSystem) ExecOperationForCB(cb *selectCaseInterface.CallbackHandler, op IOperation) {
 	// 在一个新的协程中调用
 	exec := func(data interface{}) {
+		//t := time.Now().UnixNano()
 		if rt, err := d.db.ExecOperation(op); err != nil {
 			log.Error("ExecOperation", "Err", err.Error())
 			if cb != nil {
@@ -101,6 +102,10 @@ func (d *DatabaseSystem) ExecOperationForCB(cb *selectCaseInterface.CallbackHand
 			}
 		}
 		op.Close()
+
+		//t2 := time.Now().UnixNano()
+		//f := float64(t2-t) * 0.000001
+		//log.Debug(op.ToString(), "time", f)
 	}
 
 	d.goPool.Go(exec, nil)
@@ -110,11 +115,15 @@ func (d *DatabaseSystem) ExecOperationForCB(cb *selectCaseInterface.CallbackHand
 func (d *DatabaseSystem) ExecOperationNoReturn(op IOperation) {
 	// 在一个新的协程中调用
 	exec := func(data interface{}) {
+		//t := time.Now().UnixNano()
 		if _, err := d.db.ExecOperation(op); err != nil {
 			log.Error("ExecOperation", "Err", err.Error())
 		}
 		// 执行成功什么也不干
 		op.Close()
+		//t2 := time.Now().UnixNano()
+		//f := float64(t2-t) * 0.000001
+		//log.Debug(op.ToString(), "time", f)
 	}
 
 	d.goPool.Go(exec, nil)

@@ -1,9 +1,9 @@
 package slHttpClient
 
 import (
+	"github.com/ntfox0001/svrLib/goroutinePool"
 	"github.com/ntfox0001/svrLib/network"
 	"github.com/ntfox0001/svrLib/selectCase/selectCaseInterface"
-	"github.com/ntfox0001/svrLib/util"
 
 	"github.com/ntfox0001/svrLib/log"
 )
@@ -11,7 +11,7 @@ import (
 var _self *HttpClientManager
 
 type HttpClientManager struct {
-	goPool *util.GoroutinePool
+	goPool *goroutinePool.GoroutinePool
 }
 
 type HttpClientResult struct {
@@ -27,7 +27,7 @@ func Instance() *HttpClientManager {
 }
 
 func (*HttpClientManager) Initial(goPoolSize, execSize int) {
-	_self.goPool = util.NewGoPool("HttpClientManager", goPoolSize, execSize)
+	_self.goPool = goroutinePool.NewGoPool("HttpClientManager", goPoolSize, execSize)
 }
 func (*HttpClientManager) Release() {
 	_self.goPool.Release()

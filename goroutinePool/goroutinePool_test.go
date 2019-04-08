@@ -1,17 +1,16 @@
-package util_test
+package goroutinePool_test
 
 import (
 	"fmt"
 	"testing"
 	"time"
 
-	"github.com/ntfox0001/svrLib/util"
-
+	"github.com/ntfox0001/svrLib/goroutinePool"
 	"github.com/ntfox0001/svrLib/log"
 )
 
 func Test_Pool(t *testing.T) {
-	pool := util.NewGoPool("testPool", 5, 5)
+	pool := goroutinePool.NewGoPool("testPool", 5, 5)
 
 	for i := 0; i < 20; i++ {
 
@@ -28,7 +27,7 @@ func Test_Pool(t *testing.T) {
 }
 
 func TestFixedPoos(t *testing.T) {
-	pool := util.NewGoFixedPool("testpool", 50, 5)
+	pool := goroutinePool.NewGoFixedPool("testpool", 50, 5)
 
 	for j := 0; j < 100; j++ {
 		go func() {
