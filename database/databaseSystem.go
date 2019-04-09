@@ -1,6 +1,8 @@
 package database
 
 import (
+	"time"
+
 	"github.com/ntfox0001/svrLib/goroutinePool"
 	"github.com/ntfox0001/svrLib/selectCase/selectCaseInterface"
 
@@ -127,4 +129,11 @@ func (d *DatabaseSystem) ExecOperationNoReturn(op IOperation) {
 	}
 
 	d.goPool.Go(exec, nil)
+}
+
+// 设置连接数和超时
+func (d *DatabaseSystem) SetConns(idle int, open int, lifetime time.Duration) {
+	d.db.sqldb.SetMaxIdleConns(idle)
+	d.db.sqldb.SetMaxOpenConns(open)
+	d.db.sqldb.SetConnMaxLifetime(lifetime)
 }
