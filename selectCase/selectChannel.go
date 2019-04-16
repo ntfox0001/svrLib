@@ -13,7 +13,7 @@ type SelectChannel struct {
 
 func NewSelectChannel() *SelectChannel {
 	return &SelectChannel{
-		eventChan: make(chan interface{}),
+		eventChan: make(chan interface{}, 1),
 	}
 }
 
