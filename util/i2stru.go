@@ -21,6 +21,11 @@ func I2Stru(i interface{}, struPtr interface{}) error {
 	}
 }
 
+func Json2Stru(js string, struPtr interface{}) error {
+	err := jsoniter.ConfigCompatibleWithStandardLibrary.UnmarshalFromString(js, struPtr)
+	return err
+}
+
 func ToJson(i interface{}) ([]byte, error) {
 	return jsoniter.Marshal(i)
 }
