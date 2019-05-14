@@ -45,3 +45,12 @@ func JdMsgGetKeep(jd *litjson.JsonData, key string) *litjson.JsonData {
 
 	return nil
 }
+
+func JdMsgGetKeepRoot(jd *litjson.JsonData) *litjson.JsonData {
+	return jd.Get(MsgKeepDataName)
+}
+
+// 只是迁移Keep data数据
+func JdMsgMigrate(from *litjson.JsonData, to *litjson.JsonData) {
+	to.SetKey(MsgKeepDataName, JdMsgGetKeepRoot(from))
+}

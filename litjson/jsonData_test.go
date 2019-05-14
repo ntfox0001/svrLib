@@ -5,6 +5,7 @@ import (
 	"reflect"
 	"testing"
 
+	jsoniter "github.com/json-iterator/go"
 	"github.com/json-iterator/go/extra"
 	"github.com/ntfox0001/svrLib/litjson"
 	"github.com/ntfox0001/svrLib/util"
@@ -107,4 +108,43 @@ func Test8(t *testing.T) {
 	err := jd.Conv2Obj(&bb)
 
 	fmt.Println(bb, err)
+}
+
+type TestJsonData struct {
+	A   int               `json:"a"`
+	Baa *litjson.JsonData `json:"_baa_"`
+}
+
+func Test9(t *testing.T) {
+	tjd := TestJsonData{
+		A:   1,
+		Baa: litjson.NewJsonData(),
+	}
+	tjd.Baa.SetKey("bb", "cc")
+	newtjd := litjson.NewJsonDataFromObject(tjd)
+	fmt.Println(newtjd.ToJson())
+
+	tjd = TestJsonData{}
+	if err := jsoniter.ConfigCompatibleWithStandardLibrary.UnmarshalFromString(newtjd.ToJson(), &tjd); err != nil {
+		fmt.Println(err.Error())
+	} else {
+		newtjd := litjson.NewJsonDataFromObject(tjd)
+		fmt.Println(newtjd.ToJson())
+	}
+
+}
+
+func Test10(t *testing.T) {
+	i := 0
+	f := func(a int) {
+		switch a {
+		case 0:
+			i = 1
+		case 1:
+			i = 2
+		}
+		fmt.Println(i)
+	}
+	f(0)
+
 }

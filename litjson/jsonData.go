@@ -47,21 +47,26 @@ func NewJsonDataByType(jdType int) *JsonData {
 }
 
 func NewJsonDataFromJson(json string) *JsonData {
-	var obj interface{}
-	if err := jsoniter.ConfigCompatibleWithStandardLibrary.UnmarshalFromString(json, &obj); err != nil {
-		log.Error("jsonData", "err", err.Error())
+	jd := &JsonData{}
+	if err := jd.InitByJson(json); err != nil {
+		log.Error("NewJsonDataFromJson", "err", err.Error(), "json", json)
 		return nil
 	}
-	jd := NewJsonDataFromObject(obj)
-
 	return jd
 }
 func NewJsonDataFromObject(obj interface{}) *JsonData {
 	jd := &JsonData{}
+	if err := jd.InitByObject(obj); err != nil {
+		log.Error("NewJsonDataFromObject", "err", err.Error(), "obj", obj)
+		return nil
+	}
+	return jd
+}
 
+func (jd *JsonData) InitByObject(obj interface{}) error {
 	if obj == nil {
 		jd.valueType = Type_None
-		return jd
+		return nil
 	}
 	switch obj.(type) {
 	case bool:
@@ -121,16 +126,25 @@ func NewJsonDataFromObject(obj interface{}) *JsonData {
 		jd.valueType = Type_Map
 		break
 	case *JsonData:
-		return obj.(*JsonData)
+		jd.data = obj.(*JsonData).data
+		jd.valueType = obj.(*JsonData).valueType
+		return nil
 	default:
 		if js, err := jsoniter.ConfigCompatibleWithStandardLibrary.MarshalToString(obj); err != nil {
-			return nil
+			return err
 		} else {
-			return NewJsonDataFromJson(js)
+			return jd.InitByJson(js)
 		}
 	}
-
-	return jd
+	return nil
+}
+func (jd *JsonData) InitByJson(json string) error {
+	var obj interface{}
+	if err := jsoniter.ConfigCompatibleWithStandardLibrary.UnmarshalFromString(json, &obj); err != nil {
+		log.Error("jsonData", "err", err.Error())
+		return nil
+	}
+	return jd.InitByObject(obj)
 }
 
 func (jd *JsonData) ensure(valueType int) bool {
@@ -427,6 +441,16 @@ func (jd *JsonData) ToObject() interface{} {
 	default:
 		return jd.data
 	}
+}
+
+// 实现json导出接口
+func (jd *JsonData) MarshalJSON() ([]byte, error) {
+	s := jd.ToJson()
+	return []byte(s), nil
+}
+
+func (jd *JsonData) UnmarshalJSON(json []byte) error {
+	return jd.InitByJson(string(json))
 }
 
 func (jd *JsonData) ToJson() string {
