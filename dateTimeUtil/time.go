@@ -75,15 +75,13 @@ Go Layout：　2006年01月15时 时区MST
 好了，您是否感觉这个表示方法兼容度更好，适应性更强呢，更容易记忆呢。
 */
 
-package util
+package dateTimeUtil
 
 import (
-	"fmt"
 	"time"
-
-	"github.com/ntfox0001/svrLib/log"
 )
 
+// 获得今天0时的本地时间戳（带有时区offset的时间戳）
 func GetToday() int64 {
 	timeStr := time.Now().Format("2006-01-02")
 
@@ -92,10 +90,12 @@ func GetToday() int64 {
 	return timeNumber
 }
 
-func GetSecondOnToday() int64 {
+// 获得今天已经经过的秒数
+func GetSecOnToday() int64 {
 	return time.Now().Unix() - GetToday()
 }
 
+// UTC时间格式转换
 func TimeParse(layout, value string) (time.Time, error) {
 	if local, err := time.LoadLocation("Local"); err != nil {
 		return time.Time{}, err
@@ -104,15 +104,55 @@ func TimeParse(layout, value string) (time.Time, error) {
 	}
 }
 
+// UTC时间格式转换 “2006-01-02 15:04:05”
+func TimeParseByDefault(value string) (time.Time, error) {
+	if local, err := time.LoadLocation("Local"); err != nil {
+		return time.Time{}, err
+	} else {
+		return time.ParseInLocation("2006-01-02 15:04:05", value, local)
+	}
+}
+
+// utc时间戳转换为本地格式时间
+func UnixParse(unix int64) string {
+	t := time.Unix(unix, 0)
+	return t.Format("2006-01-02 15:04:05")
+}
+
+// 获得明天0点的本地时间戳（带有时区offset的时间戳）
 func GetTomorrow() int64 {
 	tomorrow := time.Now()
 	tomorrow = tomorrow.Add(time.Second * 60 * 60 * 24)
-	tomorrowZeroStr := fmt.Sprintf("%d-%02d-%02d 00:00:00", tomorrow.Year(), tomorrow.Month(), tomorrow.Day())
-	tomorrowZero, err := TimeParse("2006-01-02 15:04:05", tomorrowZeroStr)
-	if err != nil {
-		log.Error("GetTomorrow err", "err", err.Error())
-		return -1
+	t, _ := TimeParse("2006-01-02", tomorrow.Format("2006-01-02"))
+	return t.Unix()
+}
+
+// 返回下一个星期x的0点本地时间戳（带有时区offset的时间戳）
+func GetZeroNextWeekDay(weekDay int) int64 {
+	cwday := int(time.Now().Weekday())
+
+	// 如果目标星期x小于等于当前
+	if weekDay <= cwday {
+		return GetToday() + int64(7-cwday+weekDay)*24*60*60
+	} else {
+		return GetToday() + int64(weekDay-cwday)*24*60*60
+	}
+}
+
+// 返回下一个星期x的timeOffset点本地时间戳（带有时区offset的时间戳）
+// timeOffset是当天的0时开始的秒数
+func GetNextWeekDay(weekDay, timeOffset int) int64 {
+	now := time.Now()
+
+	// 如果星期x就是今天，那么看当前时间是否超过timeOffset
+	if int(now.Weekday()) == weekDay {
+		today := GetToday()
+		todayOffset := now.Unix() - today
+		if todayOffset < int64(timeOffset) {
+			// 还没到
+			return today + int64(timeOffset)
+		}
 	}
 
-	return tomorrowZero.Unix()
+	return GetZeroNextWeekDay(weekDay) + int64(timeOffset)
 }
