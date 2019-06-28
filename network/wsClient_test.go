@@ -13,7 +13,7 @@ func Test1(t *testing.T) {
 		fmt.Println(err.Error())
 		return
 	}
-	client.RegisterJsonMsg("testMsg", func(map[string]interface{}) {
+	client.RegisterJsonMsg("testMsg", func(map[string]interface{}, interface{}) {
 		fmt.Println("testMsg")
 	})
 

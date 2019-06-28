@@ -42,7 +42,6 @@ func NewWsClient2(url string, header http.Header) (*WsClient, error) {
 	}
 
 	return client, nil
-
 }
 
 func (w *WsClient) Start() {

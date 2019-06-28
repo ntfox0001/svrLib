@@ -28,7 +28,7 @@ type SelectLoop struct {
 
 	actChan chan selectAddAndDelMsg
 
-	total uint64 // 用于唯一id
+	unqiueId uint64 // 用于唯一id
 
 	handler  selectCaseInterface.IEventChanHandler
 	slHelper *SelectLoopHelper
@@ -104,7 +104,7 @@ func (h *SelectLoop) GetHelper() selectCaseInterface.ISelectLoopHelper {
 }
 
 func (s *SelectLoop) NextUnqiueId() uint64 {
-	return atomic.AddUint64(&s.total, 1)
+	return atomic.AddUint64(&s.unqiueId, 1)
 }
 func (s *SelectLoop) quit(interface{}) bool {
 	return false
