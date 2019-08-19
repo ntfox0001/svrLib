@@ -35,74 +35,74 @@ type Compression struct {
 // 	}
 // }
 
-func CompressGzip(src []byte) []byte {
+func CompressGzip(src []byte) ([]byte, error) {
 	buf := &bytes.Buffer{}
 	w, _ := gzip.NewWriterLevel(buf, gzip.BestCompression)
 
 	leng, err := w.Write(src)
 	if err != nil || leng == 0 {
-		return nil
+		return nil, err
 	}
 	err = w.Flush()
 	if err != nil {
-		return nil
+		return nil, err
 	}
 	err = w.Close()
 	if err != nil {
-		return nil
+		return nil, err
 	}
 	b := buf.Bytes()
 
-	return b
+	return b, nil
 }
-func DecompressGzip(src []byte) []byte {
+func DecompressGzip(src []byte) ([]byte, error) {
 	r := bytes.NewReader(src)
 	gr, err := gzip.NewReader(r)
 	if err != nil {
-		return nil
+		return nil, err
 	}
 	rb, err := ioutil.ReadAll(gr)
 	if err != nil {
-		return nil
+		return nil, err
 	}
 
 	gr.Close()
 
-	return rb
+	return rb, nil
 }
 
-func Compresszlib(src []byte) []byte {
+func Compresszlib(src []byte) ([]byte, error) {
 	buf := &bytes.Buffer{}
 	w, _ := zlib.NewWriterLevel(buf, zlib.BestCompression)
 
 	leng, err := w.Write(src)
 	if err != nil || leng == 0 {
-		return nil
+		return nil, err
 	}
 	err = w.Flush()
 	if err != nil {
-		return nil
+		return nil, err
 	}
 	err = w.Close()
 	if err != nil {
-		return nil
+		return nil, err
 	}
 	b := buf.Bytes()
 
-	return b
+	return b, nil
 }
-func Decompresszlib(src []byte) []byte {
+func Decompresszlib(src []byte) ([]byte, error) {
 	r := bytes.NewReader(src)
 	gr, err := zlib.NewReader(r)
 	if err != nil {
-		return nil
+		return nil, err
 	}
 	rb, err := ioutil.ReadAll(gr)
 	if err != nil {
-		return nil
+		return nil, err
 	}
 
 	gr.Close()
 
-	return rb
+	return rb, nil
 }
