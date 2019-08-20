@@ -7,8 +7,8 @@ import (
 	"github.com/ntfox0001/svrLib/commonError"
 	"github.com/ntfox0001/svrLib/litjson"
 	"github.com/ntfox0001/svrLib/log"
+	"github.com/ntfox0001/svrLib/network/jsonMsg"
 	"github.com/ntfox0001/svrLib/selectCase/selectCaseInterface"
-	"github.com/ntfox0001/svrLib/util"
 )
 
 // 获得一个本次启动唯一id,线程安全
@@ -77,10 +77,10 @@ func (h *JsonMsgHandler) dispatchJsonMsg(msg *litjson.JsonData, id uint64) {
 	}
 	sMsgId := msg.Get("msgId").GetString()
 
-	jm := NewJsonMsgWithData(msg)
+	//jm := NewJsonMsgWithData(msg)
 	// 设置ConnId
-	util.JdMsgSetKeep(msg, Msg_Info_Conn_Id, id)
-	jm.SetKeepData(Msg_Info_Conn_Id, id)
+	jsonMsg.JdMsgSetKeep(msg, Msg_Info_Conn_Id, id)
+	//jm.SetKeepData(Msg_Info_Conn_Id, id)
 
 	if sMsgId != "" {
 		h.GetSelectLoopHelper().SendMsgToMe(selectCaseInterface.NewEventChanMsg(sMsgId, nil, msg))

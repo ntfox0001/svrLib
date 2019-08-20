@@ -4,6 +4,7 @@ import (
 	"errors"
 	"reflect"
 
+	"github.com/ntfox0001/svrLib/network/jsonMsg"
 	"github.com/ntfox0001/svrLib/selectCase/selectCaseInterface"
 
 	"github.com/gorilla/websocket"
@@ -51,7 +52,7 @@ func (h *JsonMsgHandler) GetSelectLoopHelper() selectCaseInterface.ISelectLoopHe
 }
 
 // 向conn发送消息，msg中必须带有KeepData：ConnId，非线程安全
-func (h *JsonMsgHandler) SendMsg(msg *JsonMsg) error {
+func (h *JsonMsgHandler) SendMsg(msg *jsonMsg.JsonMsg) error {
 
 	jdConnId := msg.GetKeepData(Msg_Info_Conn_Id)
 	if jdConnId == nil {
@@ -80,7 +81,7 @@ func (h *JsonMsgHandler) SendMsg(msg *JsonMsg) error {
 }
 
 // 向conn发送消息，msg中必须带有KeepData：ConnId，线程安全
-func (h *JsonMsgHandler) SendMsgSafe(msg *JsonMsg) {
+func (h *JsonMsgHandler) SendMsgSafe(msg *jsonMsg.JsonMsg) {
 	h.GetSelectLoopHelper().RunIn(func() {
 		h.SendMsg(msg)
 	})

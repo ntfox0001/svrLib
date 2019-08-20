@@ -1,10 +1,8 @@
-package util
+package jsonMsg
 
 import (
 	"github.com/ntfox0001/svrLib/litjson"
 )
-
-const MsgKeepDataName = "_MsgKeepDataName_"
 
 // 创建一个json消息
 func JsMsg(msgId string) map[string]interface{} {
@@ -23,22 +21,22 @@ func JdMsg(msgId string) *litjson.JsonData {
 
 func JdMsgFrom(msgId string, from *litjson.JsonData) *litjson.JsonData {
 	jd := JdMsg(msgId)
-	if from.HasKey(MsgKeepDataName) {
-		jd.SetKey(MsgKeepDataName, from.Get(MsgKeepDataName))
+	if from.HasKey(JsonMsg_KeepRootName) {
+		jd.SetKey(JsonMsg_KeepRootName, from.Get(JsonMsg_KeepRootName))
 	}
 
 	return jd
 }
 
 func JdMsgSetKeep(jd *litjson.JsonData, key string, value interface{}) {
-	if !jd.HasKey(MsgKeepDataName) {
-		jd.SetKey(MsgKeepDataName, litjson.NewJsonData())
+	if !jd.HasKey(JsonMsg_KeepRootName) {
+		jd.SetKey(JsonMsg_KeepRootName, litjson.NewJsonData())
 	}
-	jd.Get(MsgKeepDataName).SetKey(key, value)
+	jd.Get(JsonMsg_KeepRootName).SetKey(key, value)
 }
 
 func JdMsgGetKeep(jd *litjson.JsonData, key string) *litjson.JsonData {
-	keepjd := jd.Get(MsgKeepDataName)
+	keepjd := jd.Get(JsonMsg_KeepRootName)
 	if keepjd != nil {
 		return keepjd.Get(key)
 	}
@@ -47,10 +45,10 @@ func JdMsgGetKeep(jd *litjson.JsonData, key string) *litjson.JsonData {
 }
 
 func JdMsgGetKeepRoot(jd *litjson.JsonData) *litjson.JsonData {
-	return jd.Get(MsgKeepDataName)
+	return jd.Get(JsonMsg_KeepRootName)
 }
 
 // 只是迁移Keep data数据
 func JdMsgMigrate(from *litjson.JsonData, to *litjson.JsonData) {
-	to.SetKey(MsgKeepDataName, JdMsgGetKeepRoot(from))
+	to.SetKey(JsonMsg_KeepRootName, JdMsgGetKeepRoot(from))
 }
