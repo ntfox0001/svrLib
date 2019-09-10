@@ -11,16 +11,18 @@ type ChanTimeout struct {
 	timeout  int
 }
 
+// 创建一个size是1 timeout是10的ChanTimeout对象
 func NewChanTimeout() *ChanTimeout {
 	return &ChanTimeout{
-		dataChan: make(chan interface{}),
+		dataChan: make(chan interface{}, 1),
 		timeout:  10,
 	}
 }
 
-func NewChanTimeoutByTime(timeout int) *ChanTimeout {
+// size 表示chan的大小，一般用1就可以
+func NewChanTimeoutByTime(timeout int, size int) *ChanTimeout {
 	return &ChanTimeout{
-		dataChan: make(chan interface{}),
+		dataChan: make(chan interface{}, size),
 		timeout:  timeout,
 	}
 }

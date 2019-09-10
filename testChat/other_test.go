@@ -29,3 +29,7 @@ func TestMap(t *testing.T) {
 	fmt.Println(map1)
 	fmt.Println(map2)
 }
+
+func TestT(t *testing.T) {
+	fmt.Println(fmt.Sprintf("\taaa"))
+}
