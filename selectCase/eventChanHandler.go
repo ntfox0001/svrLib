@@ -3,12 +3,11 @@ package selectCase
 import (
 	"fmt"
 	"reflect"
-	"runtime/debug"
 	"sync/atomic"
 
-	"github.com/ntfox0001/svrLib/selectCase/selectCaseInterface"
-
+	"github.com/ntfox0001/svrLib/debug"
 	"github.com/ntfox0001/svrLib/log"
+	"github.com/ntfox0001/svrLib/selectCase/selectCaseInterface"
 )
 
 type EventChanHandler struct {
@@ -107,7 +106,7 @@ func (h *EventChanHandler) DispatchEvent(data interface{}) (rt bool) {
 func (h *EventChanHandler) execEvent(f func(data selectCaseInterface.EventChanMsg), msg selectCaseInterface.EventChanMsg) {
 	defer func() {
 		if err := recover(); err != nil {
-			es := fmt.Sprintf("\n%s\n", string(debug.Stack()))
+			es := fmt.Sprintf("\n%s\n", string(debug.RuntimeStacks()))
 			log.Error("execEvent error", "err", err.(error).Error(), "msg", msg, "\nstack", es)
 			return
 		}

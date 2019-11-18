@@ -3,9 +3,9 @@ package network
 import (
 	"fmt"
 	"net/http"
-	"runtime/debug"
 
 	"github.com/ntfox0001/svrLib/commonError"
+	"github.com/ntfox0001/svrLib/debug"
 	"github.com/ntfox0001/svrLib/network/msgData"
 	"github.com/ntfox0001/svrLib/network/networkInterface"
 
@@ -109,7 +109,7 @@ func (h *WsMsgHandler) DispatchJsonMsg(msg map[string]interface{}) error {
 func callJsonFunc(handler func(map[string]interface{}, interface{}), msg map[string]interface{}, userData interface{}) (rterr error) {
 	defer func() {
 		if err := recover(); err != nil {
-			es := fmt.Sprintf("\n%s\n", string(debug.Stack()))
+			es := fmt.Sprintf("\n%s\n", string(debug.RuntimeStacks()))
 			log.Error("network", "logic error:", err.(error).Error(), "msg", msg, "\nstack", es)
 			rterr = commonError.NewCommErr("logic error:"+err.(error).Error(), NetErrorLogic)
 		}
@@ -150,7 +150,7 @@ func (h *WsMsgHandler) DispatchMsg(msg *networkInterface.RawMsgData) error {
 func callFunc(handler func(*networkInterface.RawMsgData, interface{}), msg *networkInterface.RawMsgData, userData interface{}) (rterr error) {
 	defer func() {
 		if err := recover(); err != nil {
-			es := fmt.Sprintf("\n%s\n", string(debug.Stack()))
+			es := fmt.Sprintf("\n%s\n", string(debug.RuntimeStacks()))
 			log.Error("network", "logic error:", err.(error).Error(), "msg", msg, "\nstack", es)
 
 			rterr = commonError.NewCommErr("logic error:"+err.(error).Error(), NetErrorLogic)
