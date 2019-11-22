@@ -466,3 +466,7 @@ func (jd *JsonData) ToJson() string {
 func (jd *JsonData) Conv2Obj(objPtr interface{}) error {
 	return jsoniter.ConfigCompatibleWithStandardLibrary.UnmarshalFromString(jd.ToJson(), objPtr)
 }
+
+func Conv2Obj(js string, objPtr interface{}) error {
+	return jsoniter.ConfigCompatibleWithStandardLibrary.UnmarshalFromString(js, objPtr)
+}

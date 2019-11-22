@@ -8,7 +8,6 @@ import (
 	jsoniter "github.com/json-iterator/go"
 	"github.com/json-iterator/go/extra"
 	"github.com/ntfox0001/svrLib/litjson"
-	"github.com/ntfox0001/svrLib/util"
 )
 
 func Test1(t *testing.T) {
@@ -63,16 +62,6 @@ func Test4(t *testing.T) {
 	fmt.Println(jd.Get("bb").GetBool())
 }
 
-func Test5(t *testing.T) {
-	jd := util.JdMsg("LoginReq")
-	jd.SetKey("keep", litjson.NewJsonData())
-	jd.Get("keep").SetKey("gameId", 1)
-	jd.SetKey("list", litjson.NewJsonData())
-	jd.Get("list").Append("fff")
-	jd.Get("list").Append(123)
-	jd.Get("list").Append(true)
-	fmt.Println(jd.ToJson())
-}
 func Test6(t *testing.T) {
 	jd := litjson.NewJsonDataFromJson(`{"int":18446744073709551615}`)
 	fmt.Println(jd.Get("int").GetFloat32())
