@@ -7,6 +7,8 @@ import (
 	"github.com/ntfox0001/svrLib/log"
 )
 
+var ()
+
 const (
 	Type_None = iota
 	Type_Bool
@@ -46,10 +48,10 @@ func NewJsonDataByType(jdType int) *JsonData {
 	return jd
 }
 
-func NewJsonDataFromJson(json string) *JsonData {
+func NewJsonDataFromJson(js string) *JsonData {
 	jd := &JsonData{}
-	if err := jd.InitByJson(json); err != nil {
-		log.Error("NewJsonDataFromJson", "err", err.Error(), "json", json)
+	if err := jd.InitByJson(js); err != nil {
+		log.Error("NewJsonDataFromJson", "err", err.Error(), "json", js)
 		return nil
 	}
 	return jd
@@ -138,9 +140,9 @@ func (jd *JsonData) InitByObject(obj interface{}) error {
 	}
 	return nil
 }
-func (jd *JsonData) InitByJson(json string) error {
+func (jd *JsonData) InitByJson(js string) error {
 	var obj interface{}
-	if err := jsoniter.ConfigCompatibleWithStandardLibrary.UnmarshalFromString(json, &obj); err != nil {
+	if err := jsoniter.ConfigCompatibleWithStandardLibrary.UnmarshalFromString(js, &obj); err != nil {
 		log.Error("jsonData", "err", err.Error())
 		return nil
 	}
@@ -449,16 +451,16 @@ func (jd *JsonData) MarshalJSON() ([]byte, error) {
 	return []byte(s), nil
 }
 
-func (jd *JsonData) UnmarshalJSON(json []byte) error {
-	return jd.InitByJson(string(json))
+func (jd *JsonData) UnmarshalJSON(js []byte) error {
+	return jd.InitByJson(string(js))
 }
 
 func (jd *JsonData) ToJson() string {
-	if json, err := jsoniter.ConfigCompatibleWithStandardLibrary.MarshalToString(jd.ToObject()); err != nil {
+	if js, err := jsoniter.ConfigCompatibleWithStandardLibrary.MarshalToString(jd.ToObject()); err != nil {
 		log.Error("JsonData", "error", err.Error())
 		return ""
 	} else {
-		return json
+		return js
 	}
 
 }
