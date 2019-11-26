@@ -1,7 +1,6 @@
 package log
 
 import (
-	"fmt"
 	"time"
 
 	"github.com/go-stack/stack"
@@ -10,7 +9,6 @@ import (
 const timeKey = "t"
 const lvlKey = "lvl"
 const msgKey = "msg"
-
 
 // Lvl is a type for predefined log levels.
 type Lvl int
@@ -44,20 +42,20 @@ func (l Lvl) String() string {
 
 // LvlFromString returns the appropriate Lvl from a string name.
 // Useful for parsing command line args and configuration files.
-func LvlFromString(lvlString string) (Lvl, error) {
+func LvlFromString(lvlString string) Lvl {
 	switch lvlString {
 	case "debug", "dbug":
-		return LvlDebug, nil
+		return LvlDebug
 	case "info":
-		return LvlInfo, nil
+		return LvlInfo
 	case "warn":
-		return LvlWarn, nil
+		return LvlWarn
 	case "error", "eror":
-		return LvlError, nil
+		return LvlError
 	case "crit":
-		return LvlCrit, nil
+		return LvlCrit
 	default:
-		return LvlDebug, fmt.Errorf("Unknown level: %v", lvlString)
+		return LvlDebug
 	}
 }
 

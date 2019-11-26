@@ -1,13 +1,17 @@
 package litjson
 
 import (
+	"encoding/json"
 	"errors"
 
-	jsoniter "github.com/json-iterator/go"
+	//jsoniter "github.com/json-iterator/go"
 	"github.com/ntfox0001/svrLib/log"
+	//json "github.com/pquerna/ffjson/ffjson"
 )
 
-var ()
+var (
+//json = jsoniter.ConfigCompatibleWithStandardLibrary
+)
 
 const (
 	Type_None = iota
@@ -132,17 +136,17 @@ func (jd *JsonData) InitByObject(obj interface{}) error {
 		jd.valueType = obj.(*JsonData).valueType
 		return nil
 	default:
-		if js, err := jsoniter.ConfigCompatibleWithStandardLibrary.MarshalToString(obj); err != nil {
+		if bytejs, err := json.Marshal(obj); err != nil {
 			return err
 		} else {
-			return jd.InitByJson(js)
+			return jd.InitByJson(string(bytejs))
 		}
 	}
 	return nil
 }
 func (jd *JsonData) InitByJson(js string) error {
 	var obj interface{}
-	if err := jsoniter.ConfigCompatibleWithStandardLibrary.UnmarshalFromString(js, &obj); err != nil {
+	if err := json.Unmarshal([]byte(js), &obj); err != nil {
 		log.Error("jsonData", "err", err.Error())
 		return nil
 	}
@@ -456,19 +460,29 @@ func (jd *JsonData) UnmarshalJSON(js []byte) error {
 }
 
 func (jd *JsonData) ToJson() string {
-	if js, err := jsoniter.ConfigCompatibleWithStandardLibrary.MarshalToString(jd.ToObject()); err != nil {
+	if bytejs, err := json.Marshal(jd.ToObject()); err != nil {
 		log.Error("JsonData", "error", err.Error())
 		return ""
 	} else {
-		return js
+		return string(bytejs)
 	}
 
 }
 
 func (jd *JsonData) Conv2Obj(objPtr interface{}) error {
-	return jsoniter.ConfigCompatibleWithStandardLibrary.UnmarshalFromString(jd.ToJson(), objPtr)
+	return json.Unmarshal([]byte(jd.ToJson()), objPtr)
 }
 
 func Conv2Obj(js string, objPtr interface{}) error {
-	return jsoniter.ConfigCompatibleWithStandardLibrary.UnmarshalFromString(js, objPtr)
+	return json.Unmarshal([]byte(js), objPtr)
+}
+func ConvByte2Obj(bytes []byte, objPtr interface{}) error {
+	return json.Unmarshal(bytes, objPtr)
+}
+
+func Marshal(v interface{}) ([]byte, error) {
+	return json.Marshal(v)
+}
+func MarshalIndent(v interface{}, prefix, indent string) ([]byte, error) {
+	return json.MarshalIndent(v, prefix, indent)
 }

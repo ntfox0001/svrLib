@@ -2,14 +2,13 @@ package log
 
 import (
 	"bytes"
+	"encoding/json"
 	"fmt"
 	"reflect"
 	"strconv"
 	"strings"
 	"sync"
 	"time"
-
-	jsoniter "github.com/json-iterator/go"
 )
 
 const (
@@ -131,10 +130,10 @@ func JsonFormat() Format {
 // records will be pretty-printed. If lineSeparated is true, records
 // will be logged with a new line between each record.
 func JsonFormatEx(pretty, lineSeparated bool) Format {
-	jsonMarshal := jsoniter.ConfigCompatibleWithStandardLibrary.Marshal
+	jsonMarshal := json.Marshal
 	if pretty {
 		jsonMarshal = func(v interface{}) ([]byte, error) {
-			return jsoniter.ConfigCompatibleWithStandardLibrary.MarshalIndent(v, "", "    ")
+			return json.MarshalIndent(v, "", "    ")
 		}
 	}
 

@@ -4,6 +4,8 @@ import (
 	"fmt"
 	"net/http"
 
+	"github.com/ntfox0001/svrLib/litjson"
+
 	"github.com/ntfox0001/svrLib/commonError"
 	"github.com/ntfox0001/svrLib/debug"
 	"github.com/ntfox0001/svrLib/network/msgData"
@@ -11,7 +13,6 @@ import (
 
 	"github.com/golang/protobuf/proto"
 	"github.com/gorilla/websocket"
-	jsoniter "github.com/json-iterator/go"
 	"github.com/ntfox0001/svrLib/log"
 )
 
@@ -192,7 +193,7 @@ func (h *WsMsgHandler) ProcessMsg() (rtErr error) {
 	if mt == websocket.TextMessage {
 		// is json msg
 		var jsonMsg interface{}
-		err := jsoniter.ConfigCompatibleWithStandardLibrary.Unmarshal(msg, &jsonMsg)
+		err := litjson.ConvByte2Obj(msg, &jsonMsg)
 		if err == nil {
 			if jm, ok := jsonMsg.(map[string]interface{}); ok {
 

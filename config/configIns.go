@@ -2,10 +2,10 @@ package config
 
 import (
 	"io/ioutil"
-	"github.com/ntfox0001/svrLib/commonError"
 	"strconv"
 
-	jsoniter "github.com/json-iterator/go"
+	"github.com/ntfox0001/svrLib/commonError"
+	"github.com/ntfox0001/svrLib/litjson"
 
 	"github.com/ntfox0001/svrLib/log"
 )
@@ -57,7 +57,7 @@ func (c *Config) readFile(filename string) (j map[string]interface{}, e error) {
 	return j, nil
 }
 func (c *Config) readbytes(bytes []byte) (j map[string]interface{}, e error) {
-	if err := jsoniter.ConfigCompatibleWithStandardLibrary.Unmarshal(bytes, &j); err != nil {
+	if err := litjson.ConvByte2Obj(bytes, &j); err != nil {
 		log.Error("config", "Unmarshal: ", err.Error())
 		return nil, err
 	} else {

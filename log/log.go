@@ -7,17 +7,15 @@ import (
 	"os"
 )
 
-func Initial(logFormat string, level string, logFile string) error {
-	lvl, err := LvlFromString(level)
-	if err != nil {
-		Error("log level error", "lvl", level)
-		lvl = LvlInfo
-	}
+func Initial(logFormat string, level Lvl, logFile string) error {
+
 	// 默认文件格式是fmt
 	var logf Format
 	switch logFormat {
 	case "json":
 		logf = JsonFormatEx(true, true)
+	case "std":
+		logf = TerminalFormat()
 	default: // "fmt":
 		logf = LogfmtFormat()
 
@@ -33,7 +31,7 @@ func Initial(logFormat string, level string, logFile string) error {
 		comboHandler = stdHandler
 	}
 
-	Root().SetHandler(CallerFileHandler(LvlFilterHandler(lvl, comboHandler)))
+	Root().SetHandler(CallerFileHandler(LvlFilterHandler(level, comboHandler)))
 
 	return nil
 }

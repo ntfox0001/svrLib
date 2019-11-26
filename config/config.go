@@ -3,8 +3,7 @@ package config
 import (
 	"io/ioutil"
 
-	jsoniter "github.com/json-iterator/go"
-
+	"github.com/ntfox0001/svrLib/litjson"
 	"github.com/ntfox0001/svrLib/log"
 )
 
@@ -30,7 +29,7 @@ func readFile(filename string) (j map[string]interface{}, e error) {
 		return nil, err
 	}
 
-	if err := jsoniter.ConfigCompatibleWithStandardLibrary.Unmarshal(bytes, &j); err != nil {
+	if err := litjson.ConvByte2Obj(bytes, &j); err != nil {
 		log.Error("config", "Unmarshal: ", err.Error())
 		return nil, err
 	}
