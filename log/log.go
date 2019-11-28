@@ -13,7 +13,7 @@ func Initial(logFormat string, level Lvl, logFile string) error {
 	var logf Format
 	switch logFormat {
 	case "json":
-		logf = JsonFormatEx(true, true)
+		logf = JsonFormatEx(false, true)
 	case "std":
 		logf = TerminalFormat()
 	default: // "fmt":
@@ -23,7 +23,7 @@ func Initial(logFormat string, level Lvl, logFile string) error {
 
 	// os标准输出总是terminal
 	var comboHandler Handler
-	stdHandler := StreamHandler(os.Stdout, TerminalFormat())
+	stdHandler := StreamHandler(os.Stdout, logf)
 	if logFile != "" {
 		fileHandler := Must.FileHandler(logFile, logf)
 		comboHandler = MultiHandler(stdHandler, fileHandler)

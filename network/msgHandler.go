@@ -186,7 +186,7 @@ func (h *WsMsgHandler) ProcessMsg() (rtErr error) {
 	mt, msg, err := h.conn.ReadMessage()
 	if err != nil {
 		// 读取错误，直接断开
-		log.Warn("network", "readMessageErr:", err.Error())
+		log.Warn("network", "readMessageErr", err.Error())
 		rtErr = commonError.NewCommErr(err.Error(), NetErrorReadMsg)
 		return
 	}

@@ -49,7 +49,7 @@ func (h *JsonMsgHandler) _processMsg(conn *websocket.Conn, id uint64) (rtErr err
 	mt, msg, err := conn.ReadMessage()
 	if err != nil {
 		// 读取错误，直接断开
-		log.Warn("network", "readMessageErr:", err.Error())
+		log.Warn("network", "readMessageErr", err.Error())
 
 		return commonError.NewCommErr(err.Error(), NetErrorReadMsg)
 	}
