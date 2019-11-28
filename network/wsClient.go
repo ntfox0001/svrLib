@@ -18,11 +18,11 @@ type WsClient struct {
 
 func NewWsClient(url string) (*WsClient, error) {
 	header := http.Header{}
-	return NewWsClient2(url, header)
+	return NewWsClientWithHeader(url, header)
 
 }
 
-func NewWsClient2(url string, header http.Header) (*WsClient, error) {
+func NewWsClientWithHeader(url string, header http.Header) (*WsClient, error) {
 	conn, resp, err := websocket.DefaultDialer.Dial(url, header)
 	if err != nil {
 		return nil, err

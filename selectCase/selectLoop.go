@@ -33,6 +33,8 @@ type SelectLoop struct {
 	handler  selectCaseInterface.IEventChanHandler
 	slHelper *SelectLoopHelper
 
+	loopCount    uint64 // 用于保存循环次数
+	preLoopCount uint64 // 上一次读取数据的次数
 	// 用于退出loop
 	quitChan chan interface{}
 }
@@ -41,12 +43,14 @@ type SelectLoop struct {
 // preRegSize：消息handler在循环没有开始时，可缓存的注册消息数量
 func NewSelectLoop(name string, actSize int, preRegSize int) *SelectLoop {
 	sl := &SelectLoop{
-		name:        name,
-		callbacks:   NewCallbackList(),
-		selectCases: NewSelectCaseList(),
-		actChan:     make(chan selectAddAndDelMsg, actSize),
-		handler:     NewEventChanHandler(name, actSize, preRegSize),
-		quitChan:    make(chan interface{}, 1),
+		name:         name,
+		callbacks:    NewCallbackList(),
+		selectCases:  NewSelectCaseList(),
+		actChan:      make(chan selectAddAndDelMsg, actSize),
+		handler:      NewEventChanHandler(name, actSize, preRegSize),
+		loopCount:    0,
+		preLoopCount: 0,
+		quitChan:     make(chan interface{}, 1),
 	}
 	sl.slHelper = NewSelectLoopHelper(sl)
 
@@ -59,12 +63,14 @@ func NewSelectLoop(name string, actSize int, preRegSize int) *SelectLoop {
 }
 func NewSelectLoop2(name string, handler selectCaseInterface.IEventChanHandler, actSize int) *SelectLoop {
 	sl := &SelectLoop{
-		name:        name,
-		callbacks:   NewCallbackList(),
-		selectCases: NewSelectCaseList(),
-		actChan:     make(chan selectAddAndDelMsg, actSize),
-		handler:     handler,
-		quitChan:    make(chan interface{}, 1),
+		name:         name,
+		callbacks:    NewCallbackList(),
+		selectCases:  NewSelectCaseList(),
+		actChan:      make(chan selectAddAndDelMsg, actSize),
+		handler:      handler,
+		loopCount:    0,
+		preLoopCount: 0,
+		quitChan:     make(chan interface{}, 1),
 	}
 	sl.slHelper = NewSelectLoopHelper(sl)
 
@@ -95,6 +101,7 @@ runable:
 			if !s.callbacks.ToSlice()[chosen](recv.Interface()) {
 				break runable
 			}
+			s.loopCount++
 		}
 	}
 	log.Debug("- selectLoop end", "name", s.name)
@@ -179,4 +186,15 @@ func (s *SelectLoop) Close() {
 
 func (s *SelectLoop) Handler() selectCaseInterface.IEventChanHandler {
 	return s.handler
+}
+
+func (s *SelectLoop) GetLoopCount() uint64 {
+	return s.loopCount
+}
+
+// 读取LoopCount并重置
+func (s *SelectLoop) PopLoopCount() uint64 {
+	lc := s.loopCount - s.preLoopCount
+	s.preLoopCount = s.loopCount
+	return lc
 }

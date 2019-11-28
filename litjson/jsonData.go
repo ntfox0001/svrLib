@@ -1,16 +1,15 @@
 package litjson
 
 import (
-	"encoding/json"
 	"errors"
 
-	//jsoniter "github.com/json-iterator/go"
+	jsoniter "github.com/json-iterator/go"
 	"github.com/ntfox0001/svrLib/log"
 	//json "github.com/pquerna/ffjson/ffjson"
 )
 
 var (
-//json = jsoniter.ConfigCompatibleWithStandardLibrary
+	json = jsoniter.ConfigCompatibleWithStandardLibrary
 )
 
 const (
@@ -148,7 +147,7 @@ func (jd *JsonData) InitByJson(js string) error {
 	var obj interface{}
 	if err := json.Unmarshal([]byte(js), &obj); err != nil {
 		log.Error("jsonData", "err", err.Error())
-		return nil
+		return err
 	}
 	return jd.InitByObject(obj)
 }
