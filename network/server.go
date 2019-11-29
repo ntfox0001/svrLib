@@ -29,6 +29,7 @@ type Server struct {
 	certFile, keyFile string
 	twoWay            bool
 	caPath            []string
+	keepAlives        bool
 	ReadWriteTimeout  time.Duration
 	IdleTimeout       time.Duration
 }
@@ -52,8 +53,9 @@ func NewServerSsl(ip, port, certFile, keyFile string) *Server {
 		quitChan:         make(chan interface{}, 1),
 		ListenAndServeCh: make(chan error),
 		caPath:           make([]string, 0, 5),
+		keepAlives:       true,
 		ReadWriteTimeout: time.Second * 5,
-		IdleTimeout:      time.Second,
+		IdleTimeout:      0,
 	}
 
 	return svr
@@ -87,6 +89,8 @@ func (s *Server) Start() error {
 			WriteTimeout:      s.ReadWriteTimeout,
 			IdleTimeout:       s.IdleTimeout}
 	}
+
+	s.server.SetKeepAlivesEnabled(s.keepAlives)
 
 	go func() {
 		go func() {
@@ -161,4 +165,8 @@ func (s *Server) Port() string {
 func (s *Server) SetTimeout(rw time.Duration, idle time.Duration) {
 	s.IdleTimeout = idle
 	s.ReadWriteTimeout = rw
+}
+
+func (s *Server) SetKeepAlivesEnabled(v bool) {
+	s.keepAlives = v
 }
