@@ -9,14 +9,14 @@ import (
 	"github.com/ntfox0001/svrLib/log"
 )
 
-var _self *DatabaseSystem
+// var _self *DatabaseSystem
 
-func Instance() *DatabaseSystem {
-	if _self == nil {
-		_self = &DatabaseSystem{}
-	}
-	return _self
-}
+// func Instance() *DatabaseSystem {
+// 	if _self == nil {
+// 		_self = &DatabaseSystem{}
+// 	}
+// 	return _self
+// }
 
 type DatabaseSystemParams struct {
 	IP, Port, User, Password, DBName string
@@ -27,6 +27,10 @@ type DatabaseSystemParams struct {
 type DatabaseSystem struct {
 	goPool goroutinePool.IGoroutinePool
 	db     *Database
+}
+
+func NewDatabaseSystem() *DatabaseSystem {
+	return &DatabaseSystem{}
 }
 
 // db底层用多链接实现，可以并发调用，用锁实现线程安全，如果发现瓶颈，这里可以改为多db访问

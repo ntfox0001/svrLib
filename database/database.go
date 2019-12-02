@@ -50,7 +50,7 @@ func NewDatabase(ip, port, user, password, database string) (*Database, error) {
 	return nil, commonError.NewStringErr("failed to create database.")
 }
 
-func (d *Database) NewOperation(sql string, args ...interface{}) *DataOperation {
+func NewOperation(sql string, args ...interface{}) *DataOperation {
 	op := newOperation(sql, args...)
 	return op
 }
