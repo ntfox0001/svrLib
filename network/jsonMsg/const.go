@@ -10,7 +10,7 @@ const (
 	// keep根节点名字
 	JsonMsg_KeepRootName = "jmKeepRoot"
 	// 消息压栈，当从一个jsonMsg生成新的jm时，旧消息压入新消息中，可以选择只压入keep数据
-	JsonMsg_StackName = "jmStack"
+	JsonMsg_ParentName = "jmParent"
 	// 消息id
 	JsonMsg_MsgIdName = "msgId"
 )

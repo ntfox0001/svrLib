@@ -52,3 +52,7 @@ func JdMsgGetKeepRoot(jd *litjson.JsonData) *litjson.JsonData {
 func JdMsgMigrate(from *litjson.JsonData, to *litjson.JsonData) {
 	to.SetKey(JsonMsg_KeepRootName, JdMsgGetKeepRoot(from))
 }
+
+func JdMsgClearKeepRoot(jd *litjson.JsonData) {
+	jd.RemoveKey(JsonMsg_KeepRootName)
+}
