@@ -100,3 +100,7 @@ func (jm *JsonMsg) NewSubJsonMsg(name string) *JsonMsg {
 	newjm.SetTimeoutWhitBuildTime(jm.GetTimeout(), jm.GetBuildTime())
 	return newjm
 }
+
+func (jm *JsonMsg) GetParentJsonMsg() *JsonMsg {
+	return NewJsonMsgWithData(jm.parent)
+}
