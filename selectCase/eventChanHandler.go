@@ -55,7 +55,12 @@ func (h *EventChanHandler) Touch(msg selectCaseInterface.EventChanMsg) {
 			return
 		}
 	}()
-	h.eventChan <- msg
+	select {
+	case h.eventChan <- msg:
+	default:
+		log.Error("EventChanHandlerTouch", "err", "ChannelFull", "msg", msg.MsgId)
+	}
+
 }
 
 // 处理注册消息

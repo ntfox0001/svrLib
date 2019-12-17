@@ -3,6 +3,7 @@ package selectCase
 import (
 	"reflect"
 	"sync/atomic"
+	"time"
 
 	"github.com/ntfox0001/svrLib/selectCase/selectCaseInterface"
 
@@ -94,6 +95,7 @@ func (s *SelectLoop) initSelectCase(ch reflect.Value, cb func(data interface{}) 
 
 // 运行循环
 func (s *SelectLoop) Run() {
+	t1 := time.Now().UnixNano()
 runable:
 	for {
 		chosen, recv, recvOk := reflect.Select(s.selectCases.ToSlice())
@@ -104,7 +106,9 @@ runable:
 			s.loopCount++
 		}
 	}
-	log.Debug("- selectLoop end", "name", s.name)
+	t2 := time.Now().UnixNano()
+
+	log.Debug("- selectLoop end", "name", s.name, "count", s.loopCount, "time", float64((t2-t1)/1000000000), "tps", float64(s.loopCount)/float64((t2-t1)/1000000000))
 }
 func (h *SelectLoop) GetHelper() selectCaseInterface.ISelectLoopHelper {
 	return h.slHelper

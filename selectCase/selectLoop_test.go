@@ -27,15 +27,20 @@ func TestSelectLoopLot1(t *testing.T) {
 
 	go loop.Run()
 
-	for i := 0; i < 1; i++ {
-		go func(c int) {
-			for {
+	quitgo := make(chan interface{}, 1)
+	go func(c int) {
+		for {
+			select {
+			case <-quitgo:
+				break
+			default:
 				loop.GetHelper().SendMsgToMe(selectCaseInterface.NewEventChanMsg("test1", nil, c))
 			}
-		}(i)
-	}
 
-	quitchan := make(chan interface{})
+		}
+	}(1)
+
+	//quitchan := make(chan interface{})
 	// 这里读取count > 10000和count++导致访问内存冲突，使得go核心出现某种错误，导致协程暂停
 	// go func() {
 	// 	for {
@@ -45,7 +50,15 @@ func TestSelectLoopLot1(t *testing.T) {
 	// 		}
 	// 	}
 	// }()
-	<-quitchan
+	//<-quitchan
+
+	t1 := time.NewTimer(5 * time.Second)
+	<-t1.C
+	quitgo <- struct{}{}
+	loop.Close()
+
+	t1 = time.NewTimer(1 * time.Second)
+	<-t1.C
 }
 
 func TestLoopLot2(t *testing.T) {
