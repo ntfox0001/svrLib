@@ -33,3 +33,27 @@ func TestMap(t *testing.T) {
 func TestT(t *testing.T) {
 	fmt.Println(fmt.Sprintf("\taaa"))
 }
+
+func TestArray(t *testing.T) {
+	a := make([]int, 0, 0)
+	fmt.Println("len:", len(a), "  cap:", cap(a))
+
+	a = append(a, 1)
+
+	fmt.Println("len:", len(a), "  cap:", cap(a))
+	a = append(a, 1)
+
+	fmt.Println("len:", len(a), "  cap:", cap(a))
+
+	a = append(a, 1)
+
+	fmt.Println("len:", len(a), "  cap:", cap(a))
+
+	a = append(a, 1)
+
+	fmt.Println("len:", len(a), "  cap:", cap(a))
+
+	a = append(a, 1)
+
+	fmt.Println("len:", len(a), "  cap:", cap(a))
+}

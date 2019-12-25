@@ -147,3 +147,21 @@ func Test11(t *testing.T) {
 		fmt.Println(s)
 	}
 }
+
+type TestStruct struct {
+	AA int
+	BB string
+}
+
+func Test12(t *testing.T) {
+	jd := litjson.NewJsonData()
+	jd.SetKey("aaa", "bbb")
+
+	a := &TestStruct{}
+	ss := `{"AA":111, "BB":"fdsfds"}`
+
+	println(a)
+	litjson.Conv2Obj(ss, a)
+	println(a)
+	fmt.Println(a)
+}

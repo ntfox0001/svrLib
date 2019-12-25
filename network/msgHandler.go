@@ -83,6 +83,11 @@ func (h *WsMsgHandler) SendMsg(msg networkInterface.IMsgData) error {
 
 	return nil
 }
+
+func (h *WsMsgHandler) SendJsonString(js string) error {
+	return h.conn.WriteMessage(websocket.TextMessage, []byte(js))
+}
+
 func (h *WsMsgHandler) SendJsonMsg(msg interface{}) error {
 	return h.conn.WriteJSON(msg)
 }

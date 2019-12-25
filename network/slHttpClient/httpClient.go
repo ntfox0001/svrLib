@@ -30,7 +30,7 @@ func (*HttpClientManager) Initial(goPoolSize, execSize int) {
 	_self.goPool = goroutinePool.NewGoPool("HttpClientManager", goPoolSize, execSize)
 }
 func (*HttpClientManager) Release() {
-	_self.goPool.Release()
+	_self.goPool.Release(0)
 
 	log.Debug("HttpClientManager release")
 }

@@ -2,14 +2,11 @@ package goroutinePool
 
 import (
 	"container/list"
+	"time"
 
 	"github.com/ntfox0001/svrLib/log"
 )
 
-type IGoroutinePool interface {
-	Go(f func(data interface{}), data interface{})
-	Release()
-}
 type goItem struct {
 	f    func(data interface{})
 	data interface{}
@@ -39,7 +36,7 @@ func NewGoPool(name string, size int, execSize int) *GoroutinePool {
 	for i := 0; i < size; i++ {
 		goPool.idleItemList.PushBack(i)
 		goPool.itemChans[i] = make(chan goItem)
-		goPool.itemQuitChans[i] = make(chan interface{}, 1)
+		goPool.itemQuitChans[i] = make(chan interface{})
 		go goPool.execGo(i)
 	}
 	go goPool.run()
@@ -75,11 +72,24 @@ runable:
 func (g *GoroutinePool) Go(f func(data interface{}), data interface{}) {
 	g.execChan <- goItem{f, data}
 }
-func (g *GoroutinePool) Release() {
-	g.quitChan <- struct{}{}
+
+func (g *GoroutinePool) GetExecChanCount() int32 {
+	return int32(len(g.execChan))
+}
+
+func (g *GoroutinePool) Release(timeout time.Duration) {
 	for _, ic := range g.itemQuitChans {
-		ic <- struct{}{}
+		if timeout > 0 {
+			t := time.NewTimer(timeout)
+			select {
+			case ic <- struct{}{}:
+			case <-t.C:
+			}
+		} else {
+			ic <- struct{}{}
+		}
 	}
+	g.quitChan <- struct{}{}
 	close(g.quitChan)
 	log.Debug("GoroutinePool release", "name", g.name)
 }

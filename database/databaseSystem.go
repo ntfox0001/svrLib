@@ -55,8 +55,10 @@ func (d *DatabaseSystem) InitialFixPool(params DatabaseSystemParams) error {
 	return nil
 }
 
+// 释放数据库
 func (d *DatabaseSystem) Release() {
-	d.goPool.Release()
+	d.goPool.Release(0)
+	d.db.Close()
 }
 
 // 创建一个operation对象，operation对象是非线程安全的

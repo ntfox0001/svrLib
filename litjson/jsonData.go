@@ -152,6 +152,7 @@ func (jd *JsonData) InitByJson(js string) error {
 	return jd.InitByObject(obj)
 }
 
+// 确保是指定类型
 func (jd *JsonData) ensure(valueType int) bool {
 	// 如果还没有初始化，那么就用第一次调用的类型
 	if jd.valueType == Type_None {
@@ -165,6 +166,16 @@ func (jd *JsonData) ensure(valueType int) bool {
 		return true
 	}
 	return jd.valueType == valueType
+}
+
+// 确认key是否存在
+func (jd *JsonData) Confirm(keys ...string) bool {
+	for _, k := range keys {
+		if !jd.hasKey(k) {
+			return false
+		}
+	}
+	return true
 }
 
 func (jd *JsonData) Get(key string) *JsonData {
@@ -218,7 +229,7 @@ func (jd *JsonData) GetType() int {
 
 func (jd *JsonData) Index(id int) *JsonData {
 	if jd.ensure(Type_List) {
-		if jd.Len() >= id {
+		if jd.Len() < id {
 			return nil
 		}
 
@@ -240,7 +251,7 @@ func (jd *JsonData) Safe_Index(id int) (*JsonData, error) {
 
 func (jd *JsonData) SetIndex(id int, value interface{}) {
 	if jd.ensure(Type_List) {
-		if jd.Len() >= id {
+		if jd.Len() <= id {
 			return
 		}
 		jd.data.([]*JsonData)[id] = jd.isJsonData(value)

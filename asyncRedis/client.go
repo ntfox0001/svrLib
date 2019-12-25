@@ -42,7 +42,7 @@ func NewClient(address, password string, db, readTimeout, writeTimeout, minIdleC
 }
 
 func (c *Client) Close() {
-	c.goPool.Release()
+	c.goPool.Release(0)
 	c.RedisClient.Close()
 }
 
