@@ -195,7 +195,8 @@ func (h *WsMsgHandler) ProcessMsg() (rtErr error) {
 		rtErr = commonError.NewCommErr(err.Error(), NetErrorReadMsg)
 		return
 	}
-	if mt == websocket.TextMessage {
+	// 未知的原因导致msg为空，那么跳过
+	if mt == websocket.TextMessage && len(msg) > 0 {
 		// is json msg
 		var jsonMsg interface{}
 		err := litjson.ConvByte2Obj(msg, &jsonMsg)

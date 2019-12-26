@@ -3,6 +3,8 @@ package main_test
 import (
 	"fmt"
 	"testing"
+
+	"github.com/ntfox0001/svrLib/debug"
 )
 
 func TestMap(t *testing.T) {
@@ -56,4 +58,23 @@ func TestArray(t *testing.T) {
 	a = append(a, 1)
 
 	fmt.Println("len:", len(a), "  cap:", cap(a))
+}
+
+type abc struct {
+	a int
+}
+
+func dopainc(aaa *abc) {
+	aaa.a = 1
+}
+func TestPainc(t *testing.T) {
+	defer func() {
+		if err := recover(); err != nil {
+			fmt.Println(debug.RuntimeStacks())
+			return
+		}
+	}()
+
+	dopainc(nil)
+
 }

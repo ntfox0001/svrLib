@@ -83,7 +83,8 @@ func (h *EventChanHandler) SetDispatchEvent(f func(data interface{}) bool) {
 func (h *EventChanHandler) DispatchEvent(data interface{}) (rt bool) {
 	defer func() {
 		if err := recover(); err != nil {
-			log.Error("event", "name", h.name, "err", err.(error).Error())
+			es := fmt.Sprintf("\n%s\n", string(debug.RuntimeStacks()))
+			log.Error("event", "name", h.name, "err", err.(error).Error(), "\nstack", es)
 			rt = true
 			return
 		}
