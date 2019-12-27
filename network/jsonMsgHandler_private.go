@@ -53,7 +53,8 @@ func (h *JsonMsgHandler) _processMsg(conn *websocket.Conn, id uint64) (rtErr err
 
 		return commonError.NewCommErr(err.Error(), NetErrorReadMsg)
 	}
-	if mt == websocket.TextMessage {
+	// 未知的原因导致msg为空，那么跳过
+	if mt == websocket.TextMessage && len(msg) > 0 {
 		// is json msg
 		msgjd := litjson.NewJsonDataFromJson(string(msg))
 		if msgjd != nil {

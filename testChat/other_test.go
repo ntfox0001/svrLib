@@ -2,6 +2,7 @@ package main_test
 
 import (
 	"fmt"
+	"sync"
 	"testing"
 
 	"github.com/ntfox0001/svrLib/debug"
@@ -77,4 +78,34 @@ func TestPainc(t *testing.T) {
 
 	dopainc(nil)
 
+}
+
+func TestMapconcurrent(t *testing.T) {
+	mm := make(map[string]int)
+	for i := 0; i < 10000; i++ {
+		mm[fmt.Sprint(i)] = i + 1
+	}
+
+	var wait sync.WaitGroup
+
+	for i := 0; i < 10000; i++ {
+		wait.Add(2)
+		go func() {
+			for j := 0; j < len(mm); j++ {
+				if k, ok := mm[fmt.Sprint(j)]; ok {
+					k = k + 1
+				}
+			}
+			wait.Done()
+		}()
+		go func() {
+			for k, v := range mm {
+				k = k + "1"
+				v = v + 1
+			}
+			wait.Done()
+		}()
+	}
+
+	wait.Wait()
 }
