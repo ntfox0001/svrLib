@@ -7,10 +7,6 @@ import (
 	"github.com/ntfox0001/svrLib/log"
 )
 
-type goItem struct {
-	f    func(data interface{})
-	data interface{}
-}
 type GoroutinePool struct {
 	itemChans     []chan goItem
 	itemQuitChans []chan interface{}
@@ -59,7 +55,7 @@ runable:
 				g.itemChans[id] <- item
 			} else {
 				log.Warn("go pool full", "name", g.name)
-				go item.f(item.data)
+				go item.f()
 			}
 
 		}
@@ -69,8 +65,8 @@ runable:
 }
 
 // safe thread
-func (g *GoroutinePool) Go(f func(data interface{}), data interface{}) {
-	g.execChan <- goItem{f, data}
+func (g *GoroutinePool) Go(f func()) {
+	g.execChan <- goItem{f}
 }
 
 func (g *GoroutinePool) GetExecChanCount() int32 {
@@ -101,7 +97,7 @@ runable:
 		case <-g.itemQuitChans[id]:
 			break runable
 		case item := <-g.itemChans[id]:
-			item.f(item.data)
+			item.f()
 		}
 
 		g.freeChan <- id

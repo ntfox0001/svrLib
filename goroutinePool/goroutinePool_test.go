@@ -2,6 +2,7 @@ package goroutinePool_test
 
 import (
 	"fmt"
+	"runtime"
 	"testing"
 	"time"
 
@@ -14,11 +15,11 @@ func Test_Pool(t *testing.T) {
 
 	for i := 0; i < 20; i++ {
 
-		pool.Go(func(i interface{}) {
+		pool.Go(func() {
 			log.Debug("go start", "id", i)
 			<-time.After(time.Second * 2)
 			log.Debug("go end", "id", i)
-		}, i)
+		})
 
 	}
 	// 等待所有任务都开始
@@ -34,11 +35,11 @@ func Test_fixPool(t *testing.T) {
 
 	for i := 0; i < 20; i++ {
 
-		pool.Go(func(i interface{}) {
+		pool.Go(func() {
 			log.Debug("go start", "id", i)
 			<-time.After(time.Second)
 			log.Debug("go end", "id", i)
-		}, i)
+		})
 
 	}
 	// 等待所有任务都开始
@@ -50,14 +51,20 @@ func Test_fixPool(t *testing.T) {
 	pool.Release(time.Second * 10)
 }
 
-func TestFixedPoos(t *testing.T) {
+func TestFixedPool(t *testing.T) {
 	pool := goroutinePool.NewGoFixedPool("testpool", 50, 5)
 
 	for j := 0; j < 100; j++ {
 		go func() {
 			for i := 0; i < 100; i++ {
 				//fmt.Print("+ ")
-				pool.Go(tttt, i)
+				pool.Go(func() {
+					//for i := 0; i < 10; i++ {
+					t := time.NewTimer(time.Second * 2)
+					<-t.C
+					fmt.Print(". ")
+					//}
+				})
 			}
 		}()
 	}
@@ -69,12 +76,9 @@ func TestFixedPoos(t *testing.T) {
 		}
 	}
 	pool.Release(time.Second * 10)
-}
 
-func tttt(d interface{}) {
-	//for i := 0; i < 10; i++ {
-	t := time.NewTimer(time.Second * 2)
-	<-t.C
-	fmt.Print(". ")
-	//}
+	mem := runtime.MemStats{}
+	runtime.ReadMemStats(&mem)
+	curMem := mem.TotalAlloc / 1048576
+	t.Logf("memory usage:%d MB", curMem)
 }

@@ -7,7 +7,7 @@ import (
 
 // caCertPath:证书文件，用来验证服务器的证书是否真实
 func (*HttpClientManager) HttpsGet(cb *selectCaseInterface.CallbackHandler, url, caCertPath string) {
-	hp := func(data interface{}) {
+	hp := func() {
 		rtStr, err := network.SyncHttpsGet(url, caCertPath)
 		rt := HttpClientResult{
 			Body: rtStr,
@@ -18,12 +18,12 @@ func (*HttpClientManager) HttpsGet(cb *selectCaseInterface.CallbackHandler, url,
 		}
 
 	}
-	_self.goPool.Go(hp, nil)
+	_self.goPool.Go(hp)
 }
 
 // caCertPath:证书文件，用来验证服务器的证书是否真实
 func (*HttpClientManager) HttpsPost(cb *selectCaseInterface.CallbackHandler, url, content, contentType, caCertPath string) {
-	hp := func(data interface{}) {
+	hp := func() {
 		rtStr, err := network.SyncHttpsPost(url, content, contentType, caCertPath)
 		rt := HttpClientResult{
 			Body: rtStr,
@@ -34,12 +34,12 @@ func (*HttpClientManager) HttpsPost(cb *selectCaseInterface.CallbackHandler, url
 		}
 
 	}
-	_self.goPool.Go(hp, nil)
+	_self.goPool.Go(hp)
 }
 
 // caCertPath:证书文件，用来验证服务器的证书是否真实
 func (*HttpClientManager) HttpsPostByHeader(cb *selectCaseInterface.CallbackHandler, url, content, contentType string, header map[string]string, caCertPath string) {
-	hp := func(data interface{}) {
+	hp := func() {
 		rtStr, err := network.SyncHttpsPostByHeader(url, content, contentType, header, caCertPath)
 		rt := HttpClientResult{
 			Body: rtStr,
@@ -50,7 +50,7 @@ func (*HttpClientManager) HttpsPostByHeader(cb *selectCaseInterface.CallbackHand
 		}
 
 	}
-	_self.goPool.Go(hp, nil)
+	_self.goPool.Go(hp)
 }
 
 // https two-way ---------------------------------------------------------------------------------------------------------
@@ -58,7 +58,7 @@ func (*HttpClientManager) HttpsPostByHeader(cb *selectCaseInterface.CallbackHand
 // caCertPath:证书文件，用来验证服务器的证书是否真实
 // crtPath, keyPath: 用于验证客户端真实性的文件
 func (*HttpClientManager) HttpsTwoWayGet(cb *selectCaseInterface.CallbackHandler, url, caCertPath, crtPath, keyPath string) {
-	hp := func(data interface{}) {
+	hp := func() {
 		rtStr, err := network.SyncHttpsTwoWayGet(url, caCertPath, crtPath, keyPath)
 		rt := HttpClientResult{
 			Body: rtStr,
@@ -69,13 +69,13 @@ func (*HttpClientManager) HttpsTwoWayGet(cb *selectCaseInterface.CallbackHandler
 		}
 
 	}
-	_self.goPool.Go(hp, nil)
+	_self.goPool.Go(hp)
 }
 
 // caCertPath:证书文件，用来验证服务器的证书是否真实
 // crtPath, keyPath: 用于验证客户端真实性的文件
 func (*HttpClientManager) HttpsTwoWayPost(cb *selectCaseInterface.CallbackHandler, url, content, contentType, caCertPath, crtPath, keyPath string) {
-	hp := func(data interface{}) {
+	hp := func() {
 		rtStr, err := network.SyncHttpsTwoWayPost(url, content, contentType, caCertPath, crtPath, keyPath)
 		rt := HttpClientResult{
 			Body: rtStr,
@@ -86,13 +86,13 @@ func (*HttpClientManager) HttpsTwoWayPost(cb *selectCaseInterface.CallbackHandle
 		}
 
 	}
-	_self.goPool.Go(hp, nil)
+	_self.goPool.Go(hp)
 }
 
 // caCertPath:证书文件，用来验证服务器的证书是否真实
 // crtPath, keyPath: 用于验证客户端真实性的文件
 func (*HttpClientManager) HttpsTwoWayPostByHeader(cb *selectCaseInterface.CallbackHandler, url, content, contentType string, header map[string]string, caCertPath, crtPath, keyPath string) {
-	hp := func(data interface{}) {
+	hp := func() {
 		rtStr, err := network.SyncHttpsTwoWayPostByHeader(url, content, contentType, header, caCertPath, crtPath, keyPath)
 		rt := HttpClientResult{
 			Body: rtStr,
@@ -103,5 +103,5 @@ func (*HttpClientManager) HttpsTwoWayPostByHeader(cb *selectCaseInterface.Callba
 		}
 
 	}
-	_self.goPool.Go(hp, nil)
+	_self.goPool.Go(hp)
 }

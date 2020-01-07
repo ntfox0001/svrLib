@@ -81,8 +81,8 @@ runable:
 }
 
 // safe thread
-func (g *GoroutineFixedPool) Go(f func(data interface{}), data interface{}) {
-	g.execChan <- goItem{f, data}
+func (g *GoroutineFixedPool) Go(f func()) {
+	g.execChan <- goItem{f}
 }
 
 func (g *GoroutineFixedPool) GetExecChanCount() int32 {
@@ -113,7 +113,7 @@ runable:
 		case <-g.itemQuitChans[id]:
 			break runable
 		case item := <-g.itemChans[id]:
-			item.f(item.data)
+			item.f()
 		}
 
 		g.freeChan <- id

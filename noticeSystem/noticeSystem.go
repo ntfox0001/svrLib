@@ -146,7 +146,7 @@ func (*NoticeSystem) SendSmsNotice(cbHandler *selectCaseInterface.CallbackHandle
 
 	sdk := _self.sdks[newid%len(_self.sdks)]
 
-	_self.goPool.Go(func(interface{}) {
+	_self.goPool.Go(func() {
 
 		resp := NoticeResp{}
 		resp.ReturnString, resp.Err = sdk.send(data)
@@ -174,7 +174,7 @@ func (*NoticeSystem) SendWxMpNotice(cbHandler *selectCaseInterface.CallbackHandl
 	}
 	data["{accessToken}"] = _self.getAccessToken()
 
-	_self.goPool.Go(func(interface{}) {
+	_self.goPool.Go(func() {
 
 		resp, err := _self.wxMpMsgSender.send(data)
 		if err != nil {
@@ -196,7 +196,7 @@ func (*NoticeSystem) SendPhoneNotice(cbHandler *selectCaseInterface.CallbackHand
 	if _self.phoneSender == nil {
 		return
 	}
-	_self.goPool.Go(func(interface{}) {
+	_self.goPool.Go(func() {
 		resp, err := _self.phoneSender.send(data)
 		if err != nil {
 			log.Error("SendPhoneNotice", "err", err.Error())
@@ -212,7 +212,7 @@ func (*NoticeSystem) SendWxRobotNotice(data map[string]string) {
 	if _self.wxRobotSender == nil {
 		return
 	}
-	_self.goPool.Go(func(interface{}) {
+	_self.goPool.Go(func() {
 		err := _self.wxRobotSender.roomSend(data)
 		if err != nil {
 			log.Error("SendPhoneNotice", "err", err.Error())

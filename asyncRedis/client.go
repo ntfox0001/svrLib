@@ -48,9 +48,9 @@ func (c *Client) Close() {
 
 // 异步执行命令
 func (c *Client) AsyncCommond(f func(*redis.Client)) {
-	c.goPool.Go(func(data interface{}) {
+	c.goPool.Go(func() {
 		f(c.RedisClient)
-	}, nil)
+	})
 }
 
 // 调用异步执行，并返回数据

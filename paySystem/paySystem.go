@@ -2,6 +2,7 @@ package paySystem
 
 import (
 	"fmt"
+
 	"github.com/ntfox0001/svrLib/commonError"
 	"github.com/ntfox0001/svrLib/network"
 	"github.com/ntfox0001/svrLib/paySystem/payDataStruct"
@@ -80,7 +81,7 @@ func (*PaySystem) WxPay(pd payDataStruct.WxPayReqData, cb *selectCaseInterface.C
 	if pay, ok := _self.wxMpPayMap[pd.AppId]; !ok {
 		return commonError.NewStringErr("appid does not exist:" + pd.AppId)
 	} else {
-		_self.goPool.Go(func(data interface{}) {
+		_self.goPool.Go(func() {
 			resp, err := pay.BeginPay(pd)
 			if err != nil {
 				log.Warn("wx pay failed.", "err", err.Error())
@@ -96,7 +97,7 @@ func (*PaySystem) WxPay(pd payDataStruct.WxPayReqData, cb *selectCaseInterface.C
 // 开始验证一个客户端发过来的收据是否正确
 func (*PaySystem) ApplePay(userId int, receipt string, productId string) {
 	appleItem := newApplePayItem(userId, receipt, productId)
-	_self.goPool.Go(func(data interface{}) {
+	_self.goPool.Go(func() {
 		appleItem.run()
 		appleItem.waitForClose()
 	}, nil)

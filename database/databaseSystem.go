@@ -79,7 +79,7 @@ func (d *DatabaseSystem) SyncExecOperation(op IOperation) (*DataResult, error) {
 // 异步执行，callbackHelper 是用来接收消息的selectLoop
 func (d *DatabaseSystem) ExecOperation(callbackHelper selectCaseInterface.ISelectLoopHelper, msgId string, op IOperation) {
 	// 在一个新的协程中调用
-	exec := func(data interface{}) {
+	exec := func() {
 		if rt, err := d.db.ExecOperation(op); err != nil {
 			log.Error("ExecOperation", "Err", err.Error())
 		} else {
@@ -91,13 +91,13 @@ func (d *DatabaseSystem) ExecOperation(callbackHelper selectCaseInterface.ISelec
 		op.Close()
 	}
 
-	d.goPool.Go(exec, nil)
+	d.goPool.Go(exec)
 }
 
 // 异步执行接口，功能和ExecOperation一样使用CallbackHandler为参数，方便使用
 func (d *DatabaseSystem) ExecOperationForCB(cb *selectCaseInterface.CallbackHandler, op IOperation) {
 	// 在一个新的协程中调用
-	exec := func(data interface{}) {
+	exec := func() {
 		//t := time.Now().UnixNano()
 		if rt, err := d.db.ExecOperation(op); err != nil {
 			log.Error("ExecOperation", "Err", err.Error())
@@ -116,13 +116,13 @@ func (d *DatabaseSystem) ExecOperationForCB(cb *selectCaseInterface.CallbackHand
 		//log.Debug(op.ToString(), "time", f)
 	}
 
-	d.goPool.Go(exec, nil)
+	d.goPool.Go(exec)
 }
 
 // 异步执行
 func (d *DatabaseSystem) ExecOperationNoReturn(op IOperation) {
 	// 在一个新的协程中调用
-	exec := func(data interface{}) {
+	exec := func() {
 		//t := time.Now().UnixNano()
 		if _, err := d.db.ExecOperation(op); err != nil {
 			log.Error("ExecOperation", "Err", err.Error())
@@ -134,7 +134,7 @@ func (d *DatabaseSystem) ExecOperationNoReturn(op IOperation) {
 		//log.Debug(op.ToString(), "time", f)
 	}
 
-	d.goPool.Go(exec, nil)
+	d.goPool.Go(exec)
 }
 
 // 设置连接数和超时

@@ -47,7 +47,7 @@ func (*HttpClientManager) HttpGet(cb *selectCaseInterface.CallbackHandler, url s
 		}
 
 	}
-	_self.goPool.Go(hp, nil)
+	_self.goPool.Go(hp)
 }
 
 func (*HttpClientManager) HttpPost(cb *selectCaseInterface.CallbackHandler, url string, content string, contentType string) {
@@ -62,7 +62,7 @@ func (*HttpClientManager) HttpPost(cb *selectCaseInterface.CallbackHandler, url 
 		}
 
 	}
-	_self.goPool.Go(hp, nil)
+	_self.goPool.Go(hp)
 }
 
 func (*HttpClientManager) HttpPostByHeader(cb *selectCaseInterface.CallbackHandler, url string, content string, contentType string, header map[string]string) {
@@ -77,5 +77,5 @@ func (*HttpClientManager) HttpPostByHeader(cb *selectCaseInterface.CallbackHandl
 		}
 
 	}
-	_self.goPool.Go(hp, nil)
+	_self.goPool.Go(hp)
 }
