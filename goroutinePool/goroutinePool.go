@@ -2,7 +2,7 @@ package goroutinePool
 
 import (
 	"container/list"
-	"time"
+	"sync"
 
 	"github.com/ntfox0001/svrLib/log"
 )
@@ -15,6 +15,8 @@ type GoroutinePool struct {
 	freeChan      chan int
 	name          string
 	quitChan      chan interface{}
+	wait          sync.WaitGroup
+	waitWorker    sync.WaitGroup
 }
 
 // 协程池，当需要并发调用并且需要无阻塞时使用，当平时较低并发，偶尔超高并发时使用，并发上限取决于硬件能力
@@ -29,10 +31,13 @@ func NewGoPool(name string, size int, execSize int) *GoroutinePool {
 		freeChan:      make(chan int),
 		quitChan:      make(chan interface{}, 1),
 	}
+
+	// 加入等待协程
+	goPool.waitWorker.Add(size)
 	for i := 0; i < size; i++ {
 		goPool.idleItemList.PushBack(i)
 		goPool.itemChans[i] = make(chan goItem)
-		goPool.itemQuitChans[i] = make(chan interface{})
+		goPool.itemQuitChans[i] = make(chan interface{}, 1)
 		go goPool.execGo(i)
 	}
 	go goPool.run()
@@ -54,10 +59,14 @@ runable:
 				g.idleItemList.Remove(g.idleItemList.Front())
 				g.itemChans[id] <- item
 			} else {
-				log.Warn("go pool full", "name", g.name)
-				go item.f()
+				log.Warn("GoPoolFull", "name", g.name)
+				g.waitWorker.Add(1)
+				go func() {
+					item.f()
+					g.wait.Done()
+					g.waitWorker.Done()
+				}()
 			}
-
 		}
 	}
 
@@ -66,31 +75,28 @@ runable:
 
 // safe thread
 func (g *GoroutinePool) Go(f func()) {
+	g.wait.Add(1)
 	g.execChan <- goItem{f}
 }
 
+// 不能用于检查协程池是否所有任务都完成
 func (g *GoroutinePool) GetExecChanCount() int32 {
 	return int32(len(g.execChan))
 }
 
-func (g *GoroutinePool) Release(timeout time.Duration) {
+func (g *GoroutinePool) Release() {
+	// 等待所有协程完全退出
+	g.wait.Wait()
 	for _, ic := range g.itemQuitChans {
-		if timeout > 0 {
-			t := time.NewTimer(timeout)
-			select {
-			case ic <- struct{}{}:
-			case <-t.C:
-			}
-		} else {
-			ic <- struct{}{}
-		}
+		ic <- struct{}{}
 	}
+	g.waitWorker.Wait()
 	g.quitChan <- struct{}{}
 	close(g.quitChan)
 	log.Debug("GoroutinePool release", "name", g.name)
 }
 func (g *GoroutinePool) execGo(id int) {
-	//log.Debug("goItem circle start.", "id", id)
+
 runable:
 	for {
 		select {
@@ -98,9 +104,10 @@ runable:
 			break runable
 		case item := <-g.itemChans[id]:
 			item.f()
+			g.wait.Done()
 		}
 
 		g.freeChan <- id
 	}
-	//log.Debug("goItem circle quit.", "id", id)
+	g.waitWorker.Done()
 }

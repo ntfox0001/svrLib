@@ -57,7 +57,7 @@ func (d *DatabaseSystem) InitialFixPool(params DatabaseSystemParams) error {
 
 // 释放数据库
 func (d *DatabaseSystem) Release() {
-	d.goPool.Release(0)
+	d.goPool.Release()
 	d.db.Close()
 }
 

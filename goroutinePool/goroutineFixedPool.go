@@ -2,8 +2,8 @@ package goroutinePool
 
 import (
 	"container/list"
+	"sync"
 	"sync/atomic"
-	"time"
 
 	"github.com/ntfox0001/svrLib/log"
 )
@@ -18,9 +18,11 @@ type GoroutineFixedPool struct {
 	quitChan        chan interface{}
 	fullGoItems     *list.List
 	fullGoItemCount int32
+	wait            sync.WaitGroup
+	waitWorker      sync.WaitGroup
 }
 
-// 固定大小协程池，当需要并发调用并且需要无阻塞时使用
+// 固定大小协程池，当任务数超过协程池数量，那么任务会被加入到等待队列，直到有协程完成
 // name 日志中用于标识, size 携程数量, execSize压入函数的队列大小，表示并发上限
 func NewGoFixedPool(name string, size int, execSize int) *GoroutineFixedPool {
 	goPool := &GoroutineFixedPool{
@@ -34,10 +36,13 @@ func NewGoFixedPool(name string, size int, execSize int) *GoroutineFixedPool {
 		fullGoItems:     list.New(),
 		fullGoItemCount: 0,
 	}
+
+	// 加入等待协程
+	goPool.waitWorker.Add(size)
 	for i := 0; i < size; i++ {
 		goPool.idleItemList.PushBack(i)
 		goPool.itemChans[i] = make(chan goItem)
-		goPool.itemQuitChans[i] = make(chan interface{})
+		goPool.itemQuitChans[i] = make(chan interface{}, 1)
 		go goPool.execGo(i)
 	}
 	go goPool.run()
@@ -82,6 +87,7 @@ runable:
 
 // safe thread
 func (g *GoroutineFixedPool) Go(f func()) {
+	g.wait.Add(1)
 	g.execChan <- goItem{f}
 }
 
@@ -89,18 +95,13 @@ func (g *GoroutineFixedPool) GetExecChanCount() int32 {
 	return int32(len(g.execChan)) + atomic.LoadInt32(&g.fullGoItemCount)
 }
 
-func (g *GoroutineFixedPool) Release(timeout time.Duration) {
+func (g *GoroutineFixedPool) Release() {
+	// 等待所有协程完全退出
+	g.wait.Wait()
 	for _, ic := range g.itemQuitChans {
-		if timeout > 0 {
-			t := time.NewTimer(timeout)
-			select {
-			case ic <- struct{}{}:
-			case <-t.C:
-			}
-		} else {
-			ic <- struct{}{}
-		}
+		ic <- struct{}{}
 	}
+	g.waitWorker.Wait()
 	g.quitChan <- struct{}{}
 	close(g.quitChan)
 	log.Debug("GoroutineFixedPool release", "name", g.name)
@@ -114,8 +115,11 @@ runable:
 			break runable
 		case item := <-g.itemChans[id]:
 			item.f()
+			g.wait.Done()
 		}
 
 		g.freeChan <- id
 	}
+
+	g.waitWorker.Done()
 }

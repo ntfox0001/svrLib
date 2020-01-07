@@ -10,25 +10,37 @@ import (
 	"github.com/ntfox0001/svrLib/log"
 )
 
-func Test_Pool(t *testing.T) {
-	pool := goroutinePool.NewGoPool("testPool", 5, 5)
+func TestPool(t *testing.T) {
+	pool := goroutinePool.NewGoPool("testpool", 50, 5)
 
-	for i := 0; i < 20; i++ {
+	for j := 0; j < 10; j++ {
+		jj := j
 
-		pool.Go(func() {
-			log.Debug("go start", "id", i)
-			<-time.After(time.Second * 2)
-			log.Debug("go end", "id", i)
-		})
+		go func() {
+			for i := 0; i < 10; i++ {
+				//fmt.Print("+ ")
 
+				ii := i
+				pool.Go(func() {
+
+					t := time.NewTimer(time.Second * 1)
+					<-t.C
+					fmt.Print(jj*100+ii, ". ")
+				})
+			}
+		}()
 	}
-	// 等待所有任务都开始
-	for {
-		if pool.GetExecChanCount() == 0 {
-			break
-		}
-	}
-	pool.Release(time.Second * 10)
+
+	// 等待2秒让协程有机会执行
+	www := time.NewTimer(time.Second * 2)
+	<-www.C
+	fmt.Println("\nrelease.")
+	pool.Release()
+
+	mem := runtime.MemStats{}
+	runtime.ReadMemStats(&mem)
+	curMem := mem.TotalAlloc / 1048576
+	fmt.Printf("memory usage:%d MB", curMem)
 }
 func Test_fixPool(t *testing.T) {
 	pool := goroutinePool.NewGoFixedPool("testPool", 5, 5)
@@ -42,43 +54,47 @@ func Test_fixPool(t *testing.T) {
 		})
 
 	}
-	// 等待所有任务都开始
-	for {
-		if pool.GetExecChanCount() == 0 {
-			break
-		}
-	}
-	pool.Release(time.Second * 10)
+	// 等待2秒让协程有机会执行
+	www := time.NewTimer(time.Second * 2)
+	<-www.C
+	fmt.Println("\nrelease.")
+	pool.Release()
+
+	mem := runtime.MemStats{}
+	runtime.ReadMemStats(&mem)
+	curMem := mem.TotalAlloc / 1048576
+	fmt.Printf("memory usage:%d MB", curMem)
 }
 
 func TestFixedPool(t *testing.T) {
 	pool := goroutinePool.NewGoFixedPool("testpool", 50, 5)
 
-	for j := 0; j < 100; j++ {
+	for j := 0; j < 10; j++ {
+		jj := j
+
 		go func() {
-			for i := 0; i < 100; i++ {
+			for i := 0; i < 10; i++ {
 				//fmt.Print("+ ")
+
+				ii := i
 				pool.Go(func() {
-					//for i := 0; i < 10; i++ {
-					t := time.NewTimer(time.Second * 2)
+
+					t := time.NewTimer(time.Second * 1)
 					<-t.C
-					fmt.Print(". ")
-					//}
+					fmt.Print(jj*100+ii, ". ")
 				})
 			}
 		}()
 	}
 
-	// 等待所有任务都开始
-	for {
-		if pool.GetExecChanCount() == 0 {
-			break
-		}
-	}
-	pool.Release(time.Second * 10)
+	// 等待2秒让协程有机会执行
+	www := time.NewTimer(time.Second * 2)
+	<-www.C
+	fmt.Println("\nrelease.")
+	pool.Release()
 
 	mem := runtime.MemStats{}
 	runtime.ReadMemStats(&mem)
 	curMem := mem.TotalAlloc / 1048576
-	t.Logf("memory usage:%d MB", curMem)
+	fmt.Printf("memory usage:%d MB", curMem)
 }

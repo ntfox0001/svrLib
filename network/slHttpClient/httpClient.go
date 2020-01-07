@@ -30,13 +30,13 @@ func (*HttpClientManager) Initial(goPoolSize, execSize int) {
 	_self.goPool = goroutinePool.NewGoPool("HttpClientManager", goPoolSize, execSize)
 }
 func (*HttpClientManager) Release() {
-	_self.goPool.Release(0)
+	_self.goPool.Release()
 
 	log.Debug("HttpClientManager release")
 }
 
 func (*HttpClientManager) HttpGet(cb *selectCaseInterface.CallbackHandler, url string) {
-	hp := func(data interface{}) {
+	hp := func() {
 		rtStr, err := network.SyncHttpGet(url)
 		rt := HttpClientResult{
 			Body: rtStr,
@@ -51,7 +51,7 @@ func (*HttpClientManager) HttpGet(cb *selectCaseInterface.CallbackHandler, url s
 }
 
 func (*HttpClientManager) HttpPost(cb *selectCaseInterface.CallbackHandler, url string, content string, contentType string) {
-	hp := func(data interface{}) {
+	hp := func() {
 		rtStr, err := network.SyncHttpPost(url, content, contentType)
 		rt := HttpClientResult{
 			Body: rtStr,
@@ -66,7 +66,7 @@ func (*HttpClientManager) HttpPost(cb *selectCaseInterface.CallbackHandler, url 
 }
 
 func (*HttpClientManager) HttpPostByHeader(cb *selectCaseInterface.CallbackHandler, url string, content string, contentType string, header map[string]string) {
-	hp := func(data interface{}) {
+	hp := func() {
 		rtStr, err := network.SyncHttpPostByHeader(url, content, contentType, header)
 		rt := HttpClientResult{
 			Body: rtStr,
